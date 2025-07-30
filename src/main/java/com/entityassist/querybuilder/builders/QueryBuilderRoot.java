@@ -239,6 +239,7 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
         return session;
     }
 
+
     @Override
     public final Mutiny.StatelessSession getEntityManagerStateless()
     {
@@ -259,12 +260,25 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
         {
             if (onCreate(entity))
             {
-                return getEntityManager().persist(entity)
-                        .onItem().invoke(e -> {
-                            entity.setFake(false);
-                            setEntity(entity);
-                        })
-                        .map(v -> entity);
+                if (isStateless())
+                {
+                    return getEntityManagerStateless().insert(entity)
+                               .onItem()
+                               .invoke(e -> {
+                                   entity.setFake(false);
+                                   setEntity(entity);
+                               })
+                               .map(v -> entity);
+                }else
+                {
+                    return getEntityManager().persist(entity)
+                               .onItem()
+                               .invoke(e -> {
+                                   entity.setFake(false);
+                                   setEntity(entity);
+                               })
+                               .map(v -> entity);
+                }
             }
             return Uni.createFrom().item(entity);
         }
@@ -330,13 +344,17 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     @Override
     @NotNull
     @SuppressWarnings({"Duplicates"})
-    public Uni<E> update(E entity)
+    public Uni<E> update()
     {
         try
         {
-            if (onUpdate(entity))
+            if (onUpdate(getEntity()))
             {
-                return getEntityManager().merge(entity);
+                if (isStateless())
+                {
+                    return getEntityManagerStateless().update(getEntity()).replaceWith(getEntity());
+                }
+                return getEntityManager().merge(getEntity());
             }
         }
         catch (IllegalStateException ise)
@@ -349,7 +367,7 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
             Logger.getLogger(getClass().getName())
                     .log(Level.SEVERE, "Cannot update this entity  unknown exception the state of this object is not ready : \n", e);
         }
-        return Uni.createFrom().item(entity);
+        return Uni.createFrom().item(getEntity());
     }
 
 

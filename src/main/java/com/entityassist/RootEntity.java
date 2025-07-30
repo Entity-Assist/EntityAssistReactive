@@ -30,224 +30,240 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @SuppressWarnings("unused")
 @MappedSuperclass()
 @JsonAutoDetect(fieldVisibility = ANY,
-        getterVisibility = NONE,
-        setterVisibility = NONE)
+    getterVisibility = NONE,
+    setterVisibility = NONE)
 @JsonInclude(NON_NULL)
 public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryBuilderRoot<Q, J, I>, I extends Serializable>
-        implements IRootEntity<J, Q, I>
+    implements IRootEntity<J, Q, I>
 {
-    private static final Logger log = Logger.getLogger(RootEntity.class.getName());
+  private static final Logger log = Logger.getLogger(RootEntity.class.getName());
 
-    private static final ThreadLocal<LocalDateTime> now = new ThreadLocal<>();
+  private static final ThreadLocal<LocalDateTime> now = new ThreadLocal<>();
 
-    public static LocalDateTime getNow()
+  public static LocalDateTime getNow()
+  {
+    LocalDateTime value = now.get();
+    if (value == null)
     {
-        LocalDateTime value = now.get();
-        if (value == null)
-        {
-            return LocalDateTime.now();
-        }
-        return value;
+      return LocalDateTime.now();
     }
+    return value;
+  }
 
-    public static void setNow(LocalDateTime now)
+  public static void setNow(LocalDateTime now)
+  {
+    RootEntity.now.set(now);
+  }
+
+  public static void tick()
+  {
+    if (now.get() != null)
     {
-        RootEntity.now.set(now);
+      now.set(now.get()
+                  .plusSeconds(1L));
     }
+  }
 
-    public static void tick()
+  public static void tickMilli()
+  {
+    if (now.get() != null)
     {
-        if (now.get() != null)
-        {
-            now.set(now.get()
-                            .plusSeconds(1L));
-        }
+      now.set(now.get()
+                  .plusNanos(100L));
     }
+  }
 
-    public static void tickMilli()
+  @Transient
+  @JsonIgnore
+  private Map<Serializable, Object> properties;
+
+  /**
+   * Constructs a new base entity type
+   */
+  public RootEntity()
+  {
+    //No configuration needed
+    setFake(true);
+  }
+
+  /**
+   * Returns the builder associated with this entity
+   *
+   * @return The associated builder
+   */
+  @SuppressWarnings({"notnull"})
+  @NotNull
+  public Q builder(Mutiny.Session session)
+  {
+    Class<Q> foundQueryBuilderClass = getClassQueryBuilderClass();
+    Q instance = null;
+    try
     {
-        if (now.get() != null)
-        {
-            now.set(now.get()
-                            .plusNanos(100L));
-        }
+      instance = IGuiceContext.get(foundQueryBuilderClass);
+      instance.setSession(session);
+      instance.setStateless(false);
+      //noinspection unchecked
+      instance.setEntity((J) this);
+      return instance;
     }
-
-    @Transient
-    @JsonIgnore
-    private Map<Serializable, Object> properties;
-
-    /**
-     * Constructs a new base entity type
-     */
-    public RootEntity()
+    catch (Exception e)
     {
-        //No configuration needed
-        setFake(true);
+      log.log(Level.SEVERE, "Unable to instantiate the query builder class. Make sure there is a blank constructor", e);
+      throw new EntityAssistException("Unable to construct builder", e);
     }
+  }
 
-    /**
-     * Returns the builder associated with this entity
-     *
-     * @return The associated builder
-     */
-    @SuppressWarnings({"notnull"})
-    @NotNull
-    public Q builder(Mutiny.Session session)
+  @NotNull
+  public Q builder(Mutiny.StatelessSession session)
+  {
+    Class<Q> foundQueryBuilderClass = getClassQueryBuilderClass();
+    Q instance = null;
+    try
     {
-        Class<Q> foundQueryBuilderClass = getClassQueryBuilderClass();
-        Q instance = null;
-        try
-        {
-            instance = IGuiceContext.get(foundQueryBuilderClass);
-            instance.setSession(session);
-            instance.setStateless(false);
-            //noinspection unchecked
-            instance.setEntity((J) this);
-            return instance;
-        }
-        catch (Exception e)
-        {
-            log.log(Level.SEVERE, "Unable to instantiate the query builder class. Make sure there is a blank constructor", e);
-            throw new EntityAssistException("Unable to construct builder", e);
-        }
+      instance = IGuiceContext.get(foundQueryBuilderClass);
+      instance.setStatelessSession(session);
+      instance.setStateless(true);
+      //noinspection unchecked
+      instance.setEntity((J) this);
+      return instance;
     }
+    catch (Exception e)
+    {
+      log.log(Level.SEVERE, "Unable to instantiate the query builder class. Make sure there is a blank constructor", e);
+      throw new EntityAssistException("Unable to construct builder", e);
+    }
+  }
 
-    @NotNull
-    public Q builder(Mutiny.StatelessSession session)
-    {
-        Class<Q> foundQueryBuilderClass = getClassQueryBuilderClass();
-        Q instance = null;
-        try
-        {
-            instance = IGuiceContext.get(foundQueryBuilderClass);
-            instance.setStatelessSession(session);
-            instance.setStateless(true);
-            //noinspection unchecked
-            instance.setEntity((J) this);
-            return instance;
-        }
-        catch (Exception e)
-        {
-            log.log(Level.SEVERE, "Unable to instantiate the query builder class. Make sure there is a blank constructor", e);
-            throw new EntityAssistException("Unable to construct builder", e);
-        }
-    }
+  public Uni<J> persist(Mutiny.Session session)
+  {
+    return builder(session).persist();
+  }
 
-    /**
-     * Returns this classes associated query builder class
-     *
-     * @return The query builder identified class
-     */
-    @NotNull
-    @SuppressWarnings("unchecked")
-    protected Class<Q> getClassQueryBuilderClass()
-    {
-        return (Class<Q>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
-    }
+  public Uni<J> persist(Mutiny.StatelessSession session)
+  {
+    return builder(session).persist();
+  }
 
-    /**
-     * Performs the constraint validation and returns a list of all constraint errors.
-     *
-     * <b>Great for form checking</b>
-     *
-     * @return List of Strings
-     */
-    @NotNull
-    public List<String> validateEntity(J entity)
-    {
-        List<String> errors = new ArrayList<>();
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        Set<?> constraintViolations = validator.validate(entity);
-        if (!constraintViolations.isEmpty())
-        {
-            for (Object constraintViolation : constraintViolations)
-            {
-                ConstraintViolation<?> contraints = (ConstraintViolation<?>) constraintViolation;
-                String error = contraints.getRootBeanClass()
-                                       .getSimpleName() + "." + contraints.getPropertyPath() + " " + contraints.getMessage();
-                errors.add(error);
-            }
-        }
-        return errors;
-    }
+  public Uni<J> update(Mutiny.StatelessSession session)
+  {
+    return builder(session).update();
+  }
 
-    /**
-     * Returns if this entity is operating as a fake or not (testing or dto)
-     *
-     * @return
-     */
-    @NotNull
-    public boolean isFake()
-    {
-        return getProperties().containsKey("fake") && Boolean.parseBoolean(getProperties().get("fake")
-                                                                                   .toString());
-    }
 
-    /**
-     * Sets the fake property
-     *
-     * @param fake
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    @NotNull
-    public J setFake(boolean fake)
-    {
-        if (fake)
-        {
-            getProperties().put("fake", true);
-        }
-        else
-        {
-            getProperties().remove("fake");
-        }
-        return (J) this;
-    }
+  /**
+   * Returns this classes associated query builder class
+   *
+   * @return The query builder identified class
+   */
+  @NotNull
+  @SuppressWarnings("unchecked")
+  protected Class<Q> getClassQueryBuilderClass()
+  {
+    return (Class<Q>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+  }
 
-    /**
-     * Any DB Transient Maps
-     * <p>
-     * Sets any custom properties for this core entity.
-     * Dto Read only structure. Not for storage unless mapped as such in a sub-method
-     *
-     * @return
-     */
-    @NotNull
-    public Map<Serializable, Object> getProperties()
+  /**
+   * Performs the constraint validation and returns a list of all constraint errors.
+   *
+   * <b>Great for form checking</b>
+   *
+   * @return List of Strings
+   */
+  @NotNull
+  public List<String> validateEntity(J entity)
+  {
+    List<String> errors = new ArrayList<>();
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    Validator validator = factory.getValidator();
+    Set<?> constraintViolations = validator.validate(entity);
+    if (!constraintViolations.isEmpty())
     {
-        if (properties == null)
-        {
-            properties = new HashMap<>();
-        }
-        return properties;
+      for (Object constraintViolation : constraintViolations)
+      {
+        ConstraintViolation<?> contraints = (ConstraintViolation<?>) constraintViolation;
+        String error = contraints.getRootBeanClass()
+                           .getSimpleName() + "." + contraints.getPropertyPath() + " " + contraints.getMessage();
+        errors.add(error);
+      }
     }
+    return errors;
+  }
 
-    /**
-     * Sets any custom properties for this core entity.
-     * Dto Read only structure. Not for storage unless mapped as such in a sub-method
-     *
-     * @param properties
-     * @return
-     */
-    @NotNull
-    @SuppressWarnings("unchecked")
-    public J setProperties(@NotNull Map<Serializable, Object> properties)
-    {
-        this.properties = properties;
-        return (J) this;
-    }
+  /**
+   * Returns if this entity is operating as a fake or not (testing or dto)
+   *
+   * @return
+   */
+  @NotNull
+  public boolean isFake()
+  {
+    return getProperties().containsKey("fake") && Boolean.parseBoolean(getProperties().get("fake")
+                                                                           .toString());
+  }
 
-    /**
-     * Returns this classes associated id class type
-     *
-     * @return
-     */
-    @NotNull
-    @SuppressWarnings("unchecked")
-    public Class<I> getClassIDType()
+  /**
+   * Sets the fake property
+   *
+   * @param fake
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  @NotNull
+  public J setFake(boolean fake)
+  {
+    if (fake)
     {
-        return (Class<I>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];
+      getProperties().put("fake", true);
     }
+    else
+    {
+      getProperties().remove("fake");
+    }
+    return (J) this;
+  }
+
+  /**
+   * Any DB Transient Maps
+   * <p>
+   * Sets any custom properties for this core entity.
+   * Dto Read only structure. Not for storage unless mapped as such in a sub-method
+   *
+   * @return
+   */
+  @NotNull
+  public Map<Serializable, Object> getProperties()
+  {
+    if (properties == null)
+    {
+      properties = new HashMap<>();
+    }
+    return properties;
+  }
+
+  /**
+   * Sets any custom properties for this core entity.
+   * Dto Read only structure. Not for storage unless mapped as such in a sub-method
+   *
+   * @param properties
+   * @return
+   */
+  @NotNull
+  @SuppressWarnings("unchecked")
+  public J setProperties(@NotNull Map<Serializable, Object> properties)
+  {
+    this.properties = properties;
+    return (J) this;
+  }
+
+  /**
+   * Returns this classes associated id class type
+   *
+   * @return
+   */
+  @NotNull
+  @SuppressWarnings("unchecked")
+  public Class<I> getClassIDType()
+  {
+    return (Class<I>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];
+  }
 }

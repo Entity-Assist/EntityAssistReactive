@@ -1,7 +1,6 @@
 package com.entityassist.services.querybuilders;
 
 import com.entityassist.services.entities.IRootEntity;
-import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
@@ -9,11 +8,9 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.query.QueryProducer;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serializable;
-import java.util.List;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public interface IQueryBuilderRoot<J extends IQueryBuilderRoot<J, E, I>,
@@ -134,7 +131,7 @@ public interface IQueryBuilderRoot<J extends IQueryBuilderRoot<J, E, I>,
      *
      * @return This
      */
-    Uni<E> update(E entity);
+    Uni<E> update();
 
     /**
      * Performed on update/persist

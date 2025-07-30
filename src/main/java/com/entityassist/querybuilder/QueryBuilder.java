@@ -95,7 +95,11 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
         {
             select();
         }
-        return getEntityManager().createQuery(getCriteriaQuery());
+        if(isStateless())
+        {
+            return getEntityManagerStateless().createQuery(getCriteriaQuery());
+        }else
+            return getEntityManager().createQuery(getCriteriaQuery());
     }
 
     /**
@@ -112,7 +116,11 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
             selectCount();
             select();
         }
-        return getEntityManager().createQuery(getCriteriaQuery());
+        if(isStateless())
+        {
+            return getEntityManagerStateless().createQuery(getCriteriaQuery());
+        }else
+            return getEntityManager().createQuery(getCriteriaQuery());
     }
 
     /**
@@ -497,7 +505,12 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
         reset(deletion.from(getEntityClass()));
         setCriteriaDelete(deletion);
         select();
-        return getEntityManager().createQuery(deletion)
+        if(isStateless())
+        {
+            return getEntityManagerStateless().createQuery(deletion)
+                       .executeUpdate();
+        }else
+            return getEntityManager().createQuery(deletion)
                        .executeUpdate();
     }
 
@@ -511,6 +524,10 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
     @SuppressWarnings("Duplicates")
     public Uni<E> delete(E entity)
     {
+        if (isStateless())
+        {
+            return getEntityManagerStateless().delete(entity).map(_ -> entity);
+        }
         return getEntityManager().remove(entity)
                        .map(_ -> entity);
     }
@@ -531,7 +548,12 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
         reset(deletion.from(getEntityClass()));
         getFilters().clear();
         select();
-        return getEntityManager().createQuery(deletion)
+        if(isStateless())
+        {
+            return getEntityManagerStateless().createQuery(deletion)
+                       .executeUpdate();
+        }else
+            return getEntityManager().createQuery(deletion)
                        .executeUpdate();
     }
 }
