@@ -1,0 +1,205 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.guicedee</groupId>
+        <artifactId>parent</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.entityassist</groupId>
+    <artifactId>entity-assist-reactive</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Entity Assist Reactive</name>
+
+    <description>A Domain Driven SQL Builder Generator for JPMS/JDK8</description>
+
+    <licenses>
+        <license>
+            <name>GPL 3</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <properties>
+        <ignore.moditect>true</ignore.moditect>
+        <flatten.pom>false</flatten.pom>
+
+        <project.scm.nameUrl>/Entity-Assist/EntityAssist</project.scm.nameUrl>
+        <project.scm.packages>/Entity-Assist/Packages</project.scm.packages>
+    </properties>
+
+    <organization>
+        <name>Entity Assist</name>
+        <url>http://entityassist.com</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>GedMarc</id>
+            <name>Marc Magon</name>
+            <email>marc.magon@gmail.com</email>
+            <url>https://github.com/GedMarc</url>
+        </developer>
+    </developers>
+
+    <url>https://github.com/Entity-Assist</url>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.guicedee</groupId>
+                <artifactId>guicedee-bom</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${guicedee.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.guicedee</groupId>
+                <artifactId>tests-bom</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${guicedee.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+             <dependency>
+                 <groupId>com.guicedee</groupId>
+                 <artifactId>guiced-vertx-persistence</artifactId>
+             </dependency>
+
+        <dependency>
+            <groupId>com.guicedee</groupId>
+            <artifactId>guice-injection</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.38</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Hibernate Reactive -->
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>hibernate-reactive</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.smallrye.reactive</groupId>
+            <artifactId>mutiny</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+        </dependency>
+
+
+        <!-- Test Libraries -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-pg-client</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.ongres.scram</groupId>
+                    <artifactId>scram-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>scram</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <!-- Lombok should come first -->
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.38</version>
+                        </path>
+                        <annotationProcessorPath>
+                            <groupId>org.hibernate.orm</groupId>
+                            <artifactId>hibernate-processor</artifactId>
+                            <version>${maven.hibernate.version}</version>
+                        </annotationProcessorPath>
+                        <path>
+                            <groupId>jakarta.xml.bind</groupId>
+                            <artifactId>jakarta.xml.bind-api</artifactId>
+                            <version>${jakarta.xml.jaxb.api.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                    <annotationProcessors>
+                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
+                        <annotationProcessor>org.hibernate.processor.HibernateProcessor</annotationProcessor>
+                    </annotationProcessors>
+                    <compilerArguments>
+                        <AaddGeneratedAnnotation>false</AaddGeneratedAnnotation>
+                        <Adebug>true</Adebug>
+                    </compilerArguments>
+                    <compilerArgs>
+                        <arg>--add-reads</arg>
+                        <arg>org.jboss.logging=org.hibernate.reactive</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>--add-reads org.hibernate.orm.core=entity.assist.test --add-reads org.jboss.logging=org.hibernate.reactive</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
