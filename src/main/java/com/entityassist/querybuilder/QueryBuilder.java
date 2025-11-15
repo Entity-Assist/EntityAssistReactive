@@ -15,6 +15,8 @@ import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.PluralAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.log4j.Log4j2;
+import org.hibernate.NonUniqueResultException;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serializable;
@@ -24,6 +26,7 @@ import java.util.List;
 import static com.entityassist.querybuilder.builders.IFilterExpression.isPluralOrMapAttribute;
 import static com.entityassist.querybuilder.builders.IFilterExpression.isSingularAttribute;
 
+@Log4j2
 @SuppressWarnings({"unchecked", "unused"})
 public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends BaseEntity<E, J, I>, I extends Serializable>
         extends DefaultQueryBuilder<J, E, I>
@@ -372,6 +375,11 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
         return get(getEntityClass());
     }
 
+    public Class<J> getMeClass()
+    {
+        return (Class<J>) getClass();
+    }
+
     /**
      * Returns a list (distinct or not) and returns an empty optional if returns a list, or will simply return the first result found from
      * a list with the same criteria
@@ -393,6 +401,8 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
             if (getMaxResults() != null)
             {
                 query.setMaxResults(getMaxResults());
+            }else {
+              query.setMaxResults(1);
             }
             if (getFirstResults() != null)
             {
@@ -401,9 +411,12 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
             applyCache(query);
             onSelectExecution(query);
             Uni<T> j;
-            return query.getSingleResult()
+                return query.getSingleResult()
+                           .onFailure(NonUniqueResultException.class)
+                           .invoke(a->log.fatal("getSingle instead of getAll, or filters not correct getSingleResult - " + getEntityClass().getCanonicalName() + " - " + getMeClass(),a))
                            .invoke(res -> {
-                               ((BaseEntity<?, ?, ?>) res).setFake(false);
+                               if(res instanceof BaseEntity)
+                                ((BaseEntity<?, ?, ?>) res).setFake(false);
                            });
         }
         return Uni.createFrom()
