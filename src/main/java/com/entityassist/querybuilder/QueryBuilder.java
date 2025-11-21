@@ -444,7 +444,7 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
     @Override
     @SuppressWarnings({"unchecked", "unused"})
     @NotNull
-    public J setReturnFirst(boolean returnFirst)
+    public @org.jspecify.annotations.NonNull J setReturnFirst(boolean returnFirst)
     {
         this.returnFirst = returnFirst;
         return (J) this;

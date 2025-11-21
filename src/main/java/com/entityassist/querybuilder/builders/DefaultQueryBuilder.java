@@ -151,7 +151,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	@Override
 	@SuppressWarnings("unchecked")
 	@NotNull
-	public J setRoot(From<?, ?> root)
+	public @org.jspecify.annotations.NonNull J setRoot(From<?, ?> root)
 	{
 		this.root = root;
 		return (J) this;
@@ -662,7 +662,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	@Override
 	@NotNull
 	@SuppressWarnings("unchecked")
-	public J setCacheRegion(String cacheRegion)
+	public @org.jspecify.annotations.NonNull J setCacheRegion(String cacheRegion)
 	{
 		this.cacheRegion = cacheRegion;
 		return (J) this;
@@ -1641,7 +1641,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	@Override
 	@SuppressWarnings("unchecked")
 	@NotNull
-	public J setEntity(E entity)
+	public @org.jspecify.annotations.NonNull J setEntity(E entity)
 	{
 		super.setEntity(entity);
 		root = getCriteriaQuery().from(entity.getClass());
@@ -1657,7 +1657,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	@Override
 	@SuppressWarnings("unchecked")
 	@NotNull
-	public J setEntity(Object entity)
+	public @org.jspecify.annotations.NonNull J setEntity(Object entity)
 	{
 		super.setEntity((E) entity);
 		root = getCriteriaQuery().from(entity.getClass());
@@ -1710,7 +1710,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	@Override
 	@NotNull
 	@SuppressWarnings("unchecked")
-	public J setCacheName(@NotNull String cacheName, @NotNull String cacheRegion)
+	public @org.jspecify.annotations.NonNull J setCacheName(@NotNull String cacheName, @NotNull String cacheRegion)
 	{
 		this.cacheName = cacheName;
 		this.cacheRegion = cacheRegion;

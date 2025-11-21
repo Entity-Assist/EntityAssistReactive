@@ -209,7 +209,7 @@ public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryB
    */
   @SuppressWarnings("unchecked")
   @NotNull
-  public J setFake(boolean fake)
+  public @org.jspecify.annotations.NonNull J setFake(boolean fake)
   {
     if (fake)
     {
@@ -249,7 +249,7 @@ public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryB
    */
   @NotNull
   @SuppressWarnings("unchecked")
-  public J setProperties(@NotNull Map<Serializable, Object> properties)
+  public @org.jspecify.annotations.NonNull J setProperties(@NotNull Map<Serializable, Object> properties)
   {
     this.properties = properties;
     return (J) this;

@@ -128,7 +128,7 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     @Override
     @SuppressWarnings("unchecked")
     @NotNull
-    public J setCriteriaQuery(CriteriaDelete<E> criteriaDelete)
+    public @org.jspecify.annotations.NonNull J setCriteriaQuery(CriteriaDelete<E> criteriaDelete)
     {
         this.criteriaDelete = criteriaDelete;
         return (J) this;
@@ -174,7 +174,7 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     @Override
     @SuppressWarnings("unchecked")
     @NotNull
-    public J setEntity(E entity)
+    public @org.jspecify.annotations.NonNull J setEntity(E entity)
     {
         this.entity = entity;
         entityClass = (Class<E>) entity.getClass();
@@ -201,7 +201,7 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     @Override
     @SuppressWarnings("unchecked")
     @NotNull
-    public J setFirstResults(Integer firstResults)
+    public @org.jspecify.annotations.NonNull J setFirstResults(Integer firstResults)
     {
         this.firstResults = firstResults;
         return (J) this;
@@ -227,7 +227,7 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     @Override
     @SuppressWarnings("unchecked")
     @NotNull
-    public J setMaxResults(Integer maxResults)
+    public @org.jspecify.annotations.NonNull J setMaxResults(Integer maxResults)
     {
         this.maxResults = maxResults;
         return (J) this;
@@ -464,7 +464,7 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
      * @return
      */
     @SuppressWarnings("unchecked")
-    public J setUseDirectConnection(boolean useDirectConnection)
+    public @org.jspecify.annotations.NonNull J setUseDirectConnection(boolean useDirectConnection)
     {
         this.useDirectConnection = useDirectConnection;
         return (J) this;
@@ -490,7 +490,7 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
      */
     @NotNull
     @SuppressWarnings("unchecked")
-    public J setCriteriaDelete(CriteriaDelete<E> criteriaDelete)
+    public @org.jspecify.annotations.NonNull J setCriteriaDelete(CriteriaDelete<E> criteriaDelete)
     {
         this.criteriaDelete = criteriaDelete;
         setDelete(true);
@@ -517,7 +517,7 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     @Override
     @SuppressWarnings("unchecked")
     @NotNull
-    public J setDelete(boolean delete)
+    public @org.jspecify.annotations.NonNull J setDelete(boolean delete)
     {
         this.delete = delete;
         return (J) this;
@@ -543,7 +543,7 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     @Override
     @SuppressWarnings("unchecked")
     @NotNull
-    public J setUpdate(boolean update)
+    public @org.jspecify.annotations.NonNull J setUpdate(boolean update)
     {
         this.update = update;
         return (J) this;
@@ -583,7 +583,7 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     @Override
     @NotNull
     @SuppressWarnings("unchecked")
-    public J setCriteriaUpdate(CriteriaUpdate<E> criteriaUpdate)
+    public @org.jspecify.annotations.NonNull J setCriteriaUpdate(CriteriaUpdate<E> criteriaUpdate)
     {
         this.criteriaUpdate = criteriaUpdate;
         return (J) this;
