@@ -2,7 +2,7 @@ package com.entityassist.services.entities;
 
 import com.entityassist.services.querybuilders.IQueryBuilderRoot;
 import com.google.common.base.Strings;
-import com.guicedee.guicedinjection.pairing.Pair;
+import com.guicedee.client.utils.Pair;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.reactive.mutiny.Mutiny;

@@ -19,3 +19,4 @@ dependency-reduced-pom.xml
 flatter.pom
 .idea/workspace.xml
 /logs/
+/.vscode/

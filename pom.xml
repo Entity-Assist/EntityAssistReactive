@@ -16,14 +16,6 @@
 
     <description>A Domain Driven SQL Builder Generator for JPMS/JDK8</description>
 
-    <licenses>
-        <license>
-            <name>GPL 3</name>
-            <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
     <properties>
         <ignore.moditect>true</ignore.moditect>
         <flatten.pom>false</flatten.pom>
@@ -82,7 +74,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.38</version>
+            <version>1.18.40</version>
             <scope>provided</scope>
         </dependency>
 
@@ -130,17 +122,7 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-pg-client</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.ongres.scram</groupId>
-                    <artifactId>scram-client</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>scram</artifactId>
         </dependency>
 
     </dependencies>

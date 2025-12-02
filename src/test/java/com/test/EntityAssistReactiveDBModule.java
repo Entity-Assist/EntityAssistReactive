@@ -1,6 +1,6 @@
 package com.test;
 
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 import com.guicedee.vertxpersistence.ConnectionBaseInfo;
 import com.guicedee.vertxpersistence.DatabaseModule;
 import com.guicedee.vertxpersistence.annotations.EntityManager;
@@ -10,7 +10,6 @@ import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.Properties;
-import java.util.Set;
 
 @EntityManager(value = "entityAssistReactive", defaultEm = true)
 public class EntityAssistReactiveDBModule

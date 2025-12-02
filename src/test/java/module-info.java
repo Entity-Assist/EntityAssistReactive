@@ -1,4 +1,4 @@
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.client.services.lifecycle.IGuiceModule;
 
 module entity.assist.test {
 
@@ -21,5 +21,5 @@ module entity.assist.test {
 
     opens com.test to org.junit.platform.commons,org.hibernate.orm.core,com.google.guice,net.bytebuddy,com.entityassist;
 
-    provides com.guicedee.guicedinjection.interfaces.IGuiceModule with com.test.EntityAssistReactiveDBModule;
+    provides IGuiceModule with com.test.EntityAssistReactiveDBModule;
 }
