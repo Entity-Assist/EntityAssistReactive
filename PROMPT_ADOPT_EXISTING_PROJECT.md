@@ -8,14 +8,21 @@ Supported: Junie, AI Assistant, GitHub Copilot Chat, Cursor, ChatGPT, Claude, Ro
 
 ## 0) Provide Inputs
 Fill before running.
+Before proceeding with any other steps, register required MCP servers with your assistant (Mermaid MCP is mandatory) and load the config snippet for the selected engine.
 
 - Repository URL / local path: https://github.com/Entity-Assist/EntityAssistReactive.git
 - Org and project name: Entity-Assist / EntityAssistReactive
 - Short description: Reactive Entity Assist module that generates CRTP query builders on GuicedEE Vert.x persistence + Hibernate Reactive.
 - License (if missing or to change): GNU GPL v3.0
 
+- Stage approvals preference for this run (controls STOP gates)
+  - Choose exactly one:
+    - [x] Require explicit approval at each stage (default)
+    - [ ] Approvals are optional; proceed with documented defaults if no reply
+    - [ ] Blanket approval granted for this run (no STOPs)
+
 - AI engine used:
-  - [X] Junie
+  - [x] Junie
   - [ ] GitHub Copilot
   - [ ] Cursor
   - [ ] ChatGPT
@@ -25,6 +32,8 @@ Fill before running.
   - [ ] AI Assistant
   - Note: Multiple AI engines may be selected; configure each chosen assistant per its workspace requirements.
     - AI Assistant reads rules from `.aiassistant/rules/`; ensure those files stay in sync with this repository’s policies.
+  - Load the MCP configuration/file for each selected engine before continuing (e.g., `.mcp.json` for OpenAI/Cursor, IDE MCP settings for Claude Desktop) so servers are available to the assistant.
+- MCP servers to register (Mermaid MCP required; add others as needed): list name/purpose/endpoint/type (Mermaid MCP `https://mcp.mermaidchart.com/mcp` type `http`). Keep secrets out of the repo; reference env var names instead.
 
 - Architecture:
   - [x] Specification-Driven Design (SDD) (mandatory)
@@ -52,7 +61,7 @@ Fill before running.
     - Kotlin
       - [ ] Kotlin
       - [ ] Ktor (requires Kotlin)
-    - Other: n/a
+    - Other: <OTHER_LANGUAGES>
   - Build engines
     - Java/Kotlin builds
       - [x] Maven
@@ -64,7 +73,7 @@ Fill before running.
       - [ ] pnpm
       - [ ] yarn
       - [ ] Babel (transpile configuration lives in package.json/babel.config.*)
-    - Other build tooling: n/a
+    - Other build tooling: <OTHER_BUILDS>
   - Dependency declarations
     - JVM: com.guicedee:guiced-vertx-persistence:2.0.0-SNAPSHOT; com.guicedee:guice-injection:2.0.0-SNAPSHOT; com.guicedee.services:hibernate-reactive:2.0.0-SNAPSHOT; io.smallrye.reactive:mutiny:3.0.0; io.vertx:vertx-pg-client:5.0.5; com.guicedee.services:scram:2.0.0-SNAPSHOT; org.projectlombok:lombok:1.18.38; jakarta.xml.bind:jakarta.xml.bind-api:4.0.4; org.glassfish.jaxb:jaxb-runtime:4.0.6.
     - JavaScript/Web: capture package names + versions (npm/pnpm/yarn/Babel); do not restate full build scripts here.
@@ -89,16 +98,17 @@ Fill before running.
       - Note: Quarkus currently embeds Vert.x 4 under the hood; select Vert.x 5 only if directly targeting Vert.x APIs.
     - GuicedEE:
       - [x] Core
+      - [ ] Client
       - [ ] Web
+      - [ ] WebSocket
       - [ ] Rest
       - [x] Persistence
       - [ ] RabbitMQ
       - [ ] Cerial
       - [ ] OpenAPI
-      - [ ] Sockets
-      - Note: If Core is selected, also select Vert.x 5; if Persistence is selected, also select Hibernate Reactive 7.
+      - Note: If Core is selected, also select Vert.x 5 and include GuicedEE Vert.x Bridge rules (rules/generative/backend/guicedee/vertx/README.md); if Persistence is selected, also select Hibernate Reactive 7 and link rules/generative/backend/guicedee/persistence/README.md.
     - Databases:
-      - [x] PostgreSQL (default Vert.x reactive driver; swapable for other supported SQL clients)
+      - [x] PostgreSQL
       - [ ] MySQL
       - [ ] DB2
       - [ ] Oracle
@@ -158,7 +168,13 @@ Fill before running.
     - [ ] Web Components
   - Frameworks (JWebMP):
     - [ ] Core
-    - [ ] WebAwesome
+    - [ ] Client
+    - [ ] TypeScript
+    - [ ] Angular
+    - [ ] AgGrid
+    - [ ] AgGridEnterprise
+    - [ ] AgCharts
+    - [ ] AgCharts Enterprise
   - Frontend (Reactive):
     - Angular (choose exactly one)
       - [ ] Angular 17
@@ -197,8 +213,12 @@ Fill before running.
   - [ ] Conservative (only if explicitly required)
 
 Policies (must honor):
+- Reset the AI context before running this template—act as if this is the first prompt for the project and do not reuse prior session memory.
+- Treat all existing repository documentation as out-of-date; never rely on it as a source of truth. When executing this template, reference only the current checked-in code/config you observe.
+- Honor the selected Java LTS exactly; do not substitute another version. If Java 25 is selected, plan and generate for Java 25 everywhere.
 - Use Markdown for docs. Follow RULES.md sections: 4 (Behavioral), 5 (Technical), Document Modularity Policy, 6 (Forward-Only Change Policy).
 - Do NOT place project-specific docs inside the submodule directory.
+- Logging policy: Default to Log4j2; wire logging/config/examples against Log4j2. If Lombok is selected, use Lombok's `@Log4j2` annotation (avoid other Lombok logging annotations).
 - Fluent API Strategy: Choose either CRTP or Builder. CRTP is enforced if GuicedEE or JWebMP is selected. Align Lombok usage accordingly:
   - If CRTP: do not use @Builder; implement manual CRTP fluent setters returning (J)this with @SuppressWarnings("unchecked") as needed.
   - If Builder: prefer Lombok @Builder or manual builders; do not apply CRTP chaining rules.
@@ -254,9 +274,38 @@ Universal STOP rule
 - If the user requires staged approvals and approval is not granted, revise docs; if the user waived staged approvals, continue but be ready to revise when feedback arrives.
 - Each stage must close loops via links: PACT ↔ GLOSSARY ↔ RULES ↔ GUIDES ↔ IMPLEMENTATION.
 
+### Stage Gate Interaction Protocol (Non-blocking, with defaults)
+- Purpose: Fix cases where no user options are shown and the assistant times out after repeated prompts. This protocol standardizes the UI options and fallback behavior.
+- At every STOP gate, the assistant MUST present the following options block verbatim (adapting only the stage number):
+
+  Options:
+  - 1) Approve Stage N → proceed to Stage N+1
+  - 2) Request changes to Stage N (specify what to adjust)
+  - 3) Skip approval for this stage and proceed (recorded as optional approval)
+  - 4) Pause here (do not proceed)
+
+- Retry and fallback rules:
+  - If “Blanket approval” is selected in inputs: proceed automatically without asking; still log that gates were skipped by policy.
+  - If “Approvals optional” is selected: present the options once, send one reminder if no reply within a reasonable time, then proceed with option 3 and record the default decision. Do NOT loop more than 2 attempts.
+  - If “Require explicit approval” is selected: present the options and send one reminder if no reply; if still no response, stop at the gate with a concise summary and instructions to resume. Do NOT loop more than 2 attempts.
+  - Under no circumstance should the assistant perform more than two consecutive “await user input” attempts at a single gate.
+
+- Rendering requirement:
+  - The options block MUST be included under a clearly labeled STOP section so that UIs can render actionable choices. Avoid free-form phrasing that hides the options.
+  - Always echo the current stage and the next stage name in the options block.
+
 ## 1) Self‑Configure the AI Engine
 - Pin ./RULES.md anchors (sections above). Operate in forward-only mode: remove/replace legacy docs as needed; update all references.
-- For Copilot/Cursor: create a workspace note or .cursor/rules.md summarizing these constraints.
+- AI workspace files (selected engines):
+  - AI Assistant: ensure `.aiassistant/rules/` exists with a pinned summary of RULES.md sections 4/5, Document Modularity, and Forward-Only; keep it synchronized with the host RULES.md.
+  - GitHub Copilot: add `.github/copilot-instructions.md` (or workspace note) with the same constraints and STOP-gate policy.
+  - Cursor: add `.cursor/rules.md` with the same constraints (may share content with Copilot if both are selected).
+- MCP servers (per selected AI engine):
+  - If the chosen assistant supports MCP (e.g., Cursor, Claude Desktop, MCP-capable IDEs), register the servers before running the prompt.
+  - Always register the Mermaid MCP server for docs/diagrams: HTTP `https://mcp.mermaidchart.com/mcp` (`"type": "http"`) or SSE `https://mcp.mermaidchart.com/sse` (`"type": "sse"`).
+  - Provide a minimal MCP config snippet for the selected assistant (e.g., `.mcp.json` or IDE settings) that includes Mermaid and any other required servers; instruct the AI to load it before producing diagrams.
+  - Confirm in responses which MCP servers are active so registration aligns with the AI engine selections.
+  - Explicitly note when an output/diagram was generated using an MCP server for traceability.
 - For ChatGPT/Claude:
   - Start with system note: "Follow Rules Repository RULES.md sections 4,5, Document Modularity, and 6 (forward-only). Close loops across artifacts."
   - Owner mode (this Rules Repository repository is the active workspace; not used as a submodule):
@@ -309,30 +358,11 @@ Language selection → generation rules
 ---
 
 ## 2) Migration Plan (AI must draft first)
-**Inventory**
-- `rules/` is already tracked as a submodule (GuicedEE/ai-rules) alongside `.gitmodules` and `.gitattributes`.
-- Source lives under `src/main/java/com/entityassist/**` with CRTP entities (`RootEntity`, `BaseEntity`, `QueryBuilder`, converters, enums, services) plus `module-info.java`; tests only contain module-info stubs.
-- Build + release are Maven based with `.github/workflows/maven-publish.yml` delegating to `GuicedEE/Workflows`.
-- Support assets include `db/entityAssistTestDB.mv.db`, Lombok config, shaded/flattened POMs, and generated `target/` outputs.
-- There is no top-level README/docs folder yet; `rules/` holds all enterprise policies.
-
-**Gaps**
-- Missing PACT.md, project RULES/GUIDES/IMPLEMENTATION docs, and any host GLOSSARY or doc indexes.
-- No docs/architecture tree, diagrams, or `docs/PROMPT_REFERENCE.md`; therefore no stage-gate evidence for C4/sequence/ERD deliverables.
-- README, `.env.example`, and CI documentation do not mention the rules workflow, glossary precedence, or environment expectations.
-- The `.github` workflow consumes secrets but the repo lacks contributor guidance on how to run/test locally or seed databases.
-
-**Actions**
-- Confirm the `rules/` submodule SHA, surface it in README, and document the documentation-first workflow plus stage gates.
-- Create PACT, GLOSSARY, RULES, GUIDES, IMPLEMENTATION, docs/architecture/*, and docs/PROMPT_REFERENCE.md aligned to the selected stacks (Java 25, GuicedEE Core/Persistence, Vert.x 5, Hibernate Reactive 7, Vert.x reactive database drivers such as PostgreSQL, Lombok).
-- Draft glossary precedence plus topic links (GuicedEE, Vert.x, Hibernate Reactive, Lombok, GitHub Actions) and wire all docs together per Pact→Rules→Guides→Implementation flow.
-- Add `.env.example` (reactive Vert.x database driver + GuicedEE variables) and update README/CI notes with local setup + workflow/secret references.
-- Keep source code unchanged until documentation stage approvals are captured (forward-only).
-
-**Risk notes**
-- Respect forward-only policy: do not remove historical docs or touching `src/` modules without explicit approval after documentation is accepted.
-- Ensure Maven + GitHub Actions release pipeline remains untouched except for documentation references.
-- Binary assets (`db/*.mv.db`) should remain unmodified; diagrams must include textual sources (Mermaid/PlantUML).
+The AI should begin by producing a short plan with:
+- Inventory: existing docs (README, RULES, GUIDES, architecture docs), CI, env files, components.
+- Gaps: missing Pact/Rules/Guides/Implementation, outdated monolithic docs, absent indexes.
+- Actions: submodule add; create/relocate docs; refactor to modular; update links; CI/env alignment.
+- Risk notes: any breaking removals per forward-only policy.
 
 When approved, execute the plan as one change set.
 
@@ -346,36 +376,48 @@ When approved, execute the plan as one change set.
    - Copy only enforced Prompt Language Alignment mappings into the host glossary (e.g., WebAwesome: WaButton, WaInput, WaCluster, WaStack). For all other terms, link to the topic file/anchor instead of duplicating definitions.
    - Document a “Glossary Precedence Policy”: topic glossaries override root for their scope; the host GLOSSARY.md acts as an index and aggregator with minimal duplication and LLM interpretation guidance (e.g., CRTP vs Builder routing, JSpecify defaults).
 4. Create/Update project RULES.md (outside submodule):
-   - Declare scope, chosen stacks, and any project-specific conventions.
+  - Declare scope, chosen stacks, and any project-specific conventions.
   - Link to relevant topic indexes:
-    - rules/generative/language/react/README.md
-    - rules/generative/frontend/nextjs/README.md
-    - rules/generative/language/vue/README.md
-    - rules/generative/frontend/nuxt/README.md
-    - rules/generative/frontend/webcomponents/README.md
-     - rules/generative/frontend/angular-awesome/README.md
-     - rules/generative/backend/hibernate/README.md
-     - rules/generative/backend/guicedee/README.md
-    - If GuicedEE Core is selected: also include rules/generative/backend/vertx/README.md.
-    - If Backend Reactive → GuicedEE options are selected: link chosen function rules under rules/generative/backend/guicedee/functions/ (guiced-injection-rules.md, guiced-vertx-web-rules.md, guiced-vertx-rest-rules.md, guiced-vertx-persistence-rules.md, guiced-rabbit-rules.md, guiced-cerial-rules.md, guiced-swagger-openapi-rules.md, guiced-vertx-sockets-rules.md).
-    - If GuicedEE Persistence is selected: ensure Hibernate Reactive 7 is selected/linked (rules/generative/backend/hibernate/README.md).
-     - rules/generative/backend/security-reactive/README.md
-     - rules/generative/frontend/webawesome/README.md
-     - If JWebMP with WebAwesome plugin is selected: rules/generative/frontend/jwebmp/jwebmp-webawesome/README.md
-     - rules/generative/platform/ci-cd/README.md
-       - If CI/CD Providers are selected, also link provider docs:
-         - GitHub Actions — rules/generative/platform/ci-cd/providers/github-actions.md
-         - GitLab CI — rules/generative/platform/ci-cd/providers/gitlab-ci.md
-         - Jenkins — rules/generative/platform/ci-cd/providers/jenkins.md
-         - TeamCity — rules/generative/platform/ci-cd/providers/teamcity.md
-         - Google Cloud Build — rules/generative/platform/ci-cd/providers/google-cloud-build.md
-         - Azure Pipelines — rules/generative/platform/ci-cd/providers/azure-pipelines.md
-         - AWS CodeBuild/CodePipeline — rules/generative/platform/ci-cd/providers/aws-codebuild-codepipeline.md
-     - rules/generative/platform/observability/README.md
-     - rules/generative/architecture/README.md
-     - rules/generative/architecture/tdd/README.md
-     - rules/generative/architecture/bdd/README.md
-     - rules/generative/platform/security-auth/README.md
+    - Frontend:
+      - rules/generative/frontend/webcomponents/README.md
+      - rules/generative/frontend/webawesome/README.md
+      - rules/generative/frontend/jwebmp/README.md
+      - If JWebMP WebAwesome wrapper is selected: rules/generative/frontend/jwebmp/webawesome/README.md
+      - If JWebMP Client is selected: rules/generative/frontend/jwebmp/client/README.md
+      - If JWebMP TypeScript client is selected: rules/generative/frontend/jwebmp/typescript/README.md
+      - If JWebMP AgGrid is selected: rules/generative/frontend/jwebmp/aggrid/README.md
+      - If JWebMP AgGridEnterprise is selected: docs/AgGridEnterprise-Guide.md
+      - If JWebMP AgCharts is selected: rules/generative/frontend/jwebmp/agcharts/README.md (enterprise add-on: rules/generative/frontend/jwebmp/agcharts-enterprise/README.md)
+      - rules/generative/frontend/angular-awesome/README.md
+    - React/Vue/Next/Nuxt:
+      - rules/generative/language/react/README.md
+      - rules/generative/frontend/nextjs/README.md
+      - rules/generative/language/vue/README.md
+      - rules/generative/frontend/nuxt/README.md
+    - Backend:
+      - rules/generative/backend/guicedee/README.md
+      - rules/generative/backend/guicedee/client/README.md
+      - rules/generative/backend/guicedee/persistence/README.md
+      - rules/generative/backend/hibernate/README.md
+      - rules/generative/backend/security-reactive/README.md
+      - If GuicedEE Core is selected: include rules/generative/backend/vertx/README.md and rules/generative/backend/guicedee/vertx/README.md.
+      - If Backend Reactive → GuicedEE options are selected: link chosen function/rules under rules/generative/backend/guicedee/ (functions/..., persistence/README.md, websockets/README.md).
+      - If GuicedEE Persistence is selected: ensure Hibernate Reactive 7 is selected/linked (rules/generative/backend/hibernate/README.md) and include rules/generative/backend/guicedee/persistence/README.md.
+    - Platform/Architecture:
+      - rules/generative/platform/ci-cd/README.md
+        - If CI/CD Providers are selected, also link provider docs:
+          - GitHub Actions — rules/generative/platform/ci-cd/providers/github-actions.md
+          - GitLab CI — rules/generative/platform/ci-cd/providers/gitlab-ci.md
+          - Jenkins — rules/generative/platform/ci-cd/providers/jenkins.md
+          - TeamCity — rules/generative/platform/ci-cd/providers/teamcity.md
+          - Google Cloud Build — rules/generative/platform/ci-cd/providers/google-cloud-build.md
+          - Azure Pipelines — rules/generative/platform/ci-cd/providers/azure-pipelines.md
+          - AWS CodeBuild/CodePipeline — rules/generative/platform/ci-cd/providers/aws-codebuild-codepipeline.md
+      - rules/generative/platform/observability/README.md
+      - rules/generative/architecture/README.md
+      - rules/generative/architecture/tdd/README.md
+      - rules/generative/architecture/bdd/README.md
+      - rules/generative/platform/security-auth/README.md
    - Reference GLOSSARY.md for naming/terminology alignment.
 5. Create/Update GUIDES.md with links to chosen modular entries (e.g., Hibernate transactions, CRUD; Web Components custom-elements/shadow-dom; Angular producing/consuming; WebAwesome Button/Input rules). Use glossary-aligned terms consistently.
 6. Create/Update IMPLEMENTATION.md explaining current modules, code layout, and back-links to guides. Ensure implementation names and labels adhere to GLOSSARY.md.
@@ -386,8 +428,31 @@ When approved, execute the plan as one change set.
    - Create or update .env.example using rules/generative/platform/secrets-config/env-variables.md as the source of truth.
 9. CI alignments
    - Add/update minimal GitHub Actions workflows for build/test and document required secrets.
+   - If the project is a GuicedEE library and GitHub Actions is selected, reference the shared workflow as an example; do not drop the YAML into the repo unless the maintainer approves that pipeline. Adapt as needed to the host's CI/CD and reuse the snippet below only as a template:
+      ```yaml
+      name: Maven Package
+      on:
+        workflow_dispatch:
+        push:
+      jobs:
+        GuicedInjection:
+          uses: GuicedEE/Workflows/.github/workflows/projects.yml@master
+          with:
+            baseDir: ''
+            name: 'Guiced Injection'
+          secrets:
+            USERNAME: ${{secrets.USERNAME}}
+            USER_TOKEN: ${{secrets.USER_TOKEN}}
+            SONA_USERNAME: ${{secrets.SONA_USERNAME}}
+            SONA_PASSWORD: ${{secrets.SONA_PASSWORD}}
+      ```
 10. README updates
    - State adoption of Rules Repository, link submodule path, and link PACT/RULES/GUIDES/IMPLEMENTATION/GLOSSARY.
+11. AI workspace alignment (selected engines)
+    - AI Assistant — `.aiassistant/rules/` with RULES.md sections 4/5, Document Modularity, and Forward-Only.
+    - GitHub Copilot — `.github/copilot-instructions.md` (or workspace note) covering the same constraints and STOP-gate policy.
+    - Cursor — `.cursor/rules.md` mirroring the same constraints.
+    - Roo — ROO_WORKSPACE_POLICY.md present/pinned if Roo is selected.
 
 - WebAwesome prompt language alignment (if selected)
   - When prompting, use WebAwesome component names to enforce alignment:
@@ -414,6 +479,8 @@ When approved, execute the plan as one change set.
 - [ ] Monolithic/legacy docs removed or replaced; all references updated
 - [ ] .env.example aligned to env-variables.md
 - [ ] CI updated/added
+- [ ] MCP servers configured (config snippet provided), registered for selected assistants (Mermaid MCP for docs/diagrams), and acknowledged in outputs
+- [ ] AI workspace files committed for selected engines (.aiassistant/rules/, .github/copilot-instructions.md, .cursor/rules.md, ROO_WORKSPACE_POLICY.md if Roo)
 - [ ] All links resolve; no project files placed inside the submodule
 ---
 
@@ -427,9 +494,11 @@ When approved, execute the plan as one change set.
 ## 6) AI Response Format (Stage-Gated)
 1) Stage N deliverables (docs or plans only until Stage 4), with file paths and working links
 2) Open questions, decisions required, risks
-3) STOP — Offer an optional review checkpoint before Stage N+1; if the user wants staged approvals, request explicit approval
-   - Capture explicit phrasing (e.g., “APPROVED Stage N → Stage N+1”) when the user requires it; otherwise note that the user opted out or granted blanket approval
-4) If approval is required and granted, provide the next-stage plan; if not granted, revise and re-submit Stage N; if the user opted out, simply continue with the next stage plan
+3) STOP — Render the standardized options block (see Stage Gate Interaction Protocol). Respect the Stage approvals preference from Inputs.
+   - If approvals are optional and no reply is received after one reminder, proceed with option 3 and record the default.
+   - If explicit approval is required and still no reply after one reminder, stop and summarize how to resume; do not retry more than twice.
+   - If blanket approval is set, skip STOP sections but record that the gate was auto-approved by policy.
+4) If approval is required and granted, provide the next-stage plan; if not granted, revise and re-submit Stage N; if the user opted out or blanket approval applies, continue with the next stage plan
 
 End of prompt.
 ## Diagrams and Docs-as-Code Policy (Mandatory)
@@ -456,7 +525,9 @@ Required artifacts (Docs-as-Code)
 Format and storage (Docs as Code)
 - Use text formats that diff well:
   - Mermaid (preferred) in Markdown fenced blocks (```mermaid)
+  - Mermaid node names/labels must not contain parentheses `(` or `)`; use plain names without brackets.
   - PlantUML (.puml) or fenced blocks (```plantuml)
+  - Mermaid MCP server is available to assist with architecture and diagrams: HTTP endpoint `https://mcp.mermaidchart.com/mcp` with `"type": "http"`; SSE endpoint `https://mcp.mermaidchart.com/sse` with `"type": "sse"`.
 - Storage conventions in host repo (outside rules/):
   - docs/architecture/README.md — architecture index linking all diagrams
   - docs/architecture/c4-context.md — C4 L1

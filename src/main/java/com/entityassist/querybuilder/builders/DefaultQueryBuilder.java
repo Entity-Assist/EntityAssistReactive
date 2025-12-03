@@ -480,6 +480,40 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	private <X, Y> J wherePath(@NotNull String attributePath, Operand operator, Object value)
+	{
+		Expression<X> attributeExpression = (Expression<X>) WhereExpression.buildPath(getRoot(), attributePath);
+		WhereExpression<X, Y> whereExpression = new WhereExpression<>(attributePath, attributeExpression, operator, value);
+		whereExpressions.add(whereExpression);
+		doWhere(whereExpression);
+		return (J) this;
+	}
+
+	@Override
+	@NotNull
+	@SuppressWarnings("unchecked")
+	public <X, Y> J where(@NotNull String attributePath, Operand operator, Y[] value)
+	{
+		return wherePath(attributePath, operator, value);
+	}
+
+	@Override
+	@NotNull
+	@SuppressWarnings("unchecked")
+	public <X, Y> J where(@NotNull String attributePath, Operand operator, Collection<Y> value)
+	{
+		return wherePath(attributePath, operator, value);
+	}
+
+	@Override
+	@NotNull
+	@SuppressWarnings("unchecked")
+	public <X, Y> J where(@NotNull String attributePath, Operand operator, Y value)
+	{
+		return wherePath(attributePath, operator, value);
+	}
+	
 	/**
 	 * Where the field name is equal to the value
 	 *

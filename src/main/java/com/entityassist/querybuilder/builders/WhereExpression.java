@@ -3,11 +3,9 @@ package com.entityassist.querybuilder.builders;
 import com.entityassist.EntityAssistException;
 import com.entityassist.enumerations.Operand;
 
-
 import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.validation.constraints.NotNull;
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -17,6 +15,8 @@ final class WhereExpression<X, Y>
 {
 	private Expression<X> expressionAttribute;
 	private Attribute attribute;
+	private String attributePath;
+	private String[] attributePathSegments;
 
 	private Operand operand;
 	private Object expressionValue;
@@ -29,6 +29,18 @@ final class WhereExpression<X, Y>
 
 	WhereExpression(Attribute attribute, Expression<X> expressionAttribute, Operand operand, Object expressionValue)
 	{
+		this(attribute != null ? attribute.getName() : null, attribute, expressionAttribute, operand, expressionValue);
+	}
+
+	WhereExpression(String attributePath, Expression<X> expressionAttribute, Operand operand, Object expressionValue)
+	{
+		this(attributePath, null, expressionAttribute, operand, expressionValue);
+	}
+
+	private WhereExpression(String attributePath, Attribute attribute, Expression<X> expressionAttribute, Operand operand, Object expressionValue)
+	{
+		this.attributePath = attributePath;
+		this.attributePathSegments = splitAttributePath(attributePath);
 		this.expressionAttribute = expressionAttribute;
 		this.attribute = attribute;
 		this.operand = operand;
@@ -37,8 +49,9 @@ final class WhereExpression<X, Y>
 
 	public WhereExpression switchRoot(From root)
 	{
-		Path attr = (Path) expressionAttribute;
-		expressionAttribute = root.get(attribute.getName());
+		Path<?> path = buildPath(root, attributePathSegments);
+		//noinspection unchecked
+		expressionAttribute = (Expression<X>) path;
 		return this;
 	}
 
@@ -320,5 +333,44 @@ final class WhereExpression<X, Y>
 	{
 		this.expressionValue = expressionValue;
 		return this;
+	}
+
+	static Path<?> buildPath(From<?, ?> root, String attributePath)
+	{
+		return buildPath(root, splitAttributePath(attributePath));
+	}
+
+	private static Path<?> buildPath(From<?, ?> root, String[] segments)
+	{
+		if (segments == null || segments.length == 0)
+		{
+			throw new EntityAssistException("Attribute path must not be empty");
+		}
+		Path<?> path = root;
+		for (String segment : segments)
+		{
+			if (path == null || segment == null || segment.isEmpty())
+			{
+				throw new EntityAssistException("Invalid attribute path segment '" + segment + "'");
+			}
+			try
+			{
+				path = path.get(segment);
+			}
+			catch (IllegalArgumentException e)
+			{
+				throw new EntityAssistException("Unable to resolve attribute segment '" + segment + "'", e);
+			}
+		}
+		return path;
+	}
+
+	private static String[] splitAttributePath(String attributePath)
+	{
+		if (attributePath == null || attributePath.isEmpty())
+		{
+			return new String[0];
+		}
+		return attributePath.split("\\.");
 	}
 }

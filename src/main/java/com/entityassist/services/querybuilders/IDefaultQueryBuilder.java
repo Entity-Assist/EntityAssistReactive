@@ -200,6 +200,42 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	<X, Y> J in(Attribute<X, Y> fieldName, Y[] value);
 	
 	/**
+	 * Where the operand is the type of collection or list using a dot-separated attribute path
+	 *
+	 * @param attributePath Dot-separated path to the attribute
+	 * @param operator      The operand to use
+	 * @param value         The values to use
+	 * @param <X>           The attribute type
+	 * @param <Y>           The field value type
+	 * @return This
+	 */
+	<X, Y> J where(@NotNull String attributePath, Operand operator, Y[] value);
+
+	/**
+	 * Where the operand is the type of collection or list using a dot-separated attribute path
+	 *
+	 * @param attributePath Dot-separated path to the attribute
+	 * @param operator      The operand to use
+	 * @param value         The values to use
+	 * @param <X>           The attribute type
+	 * @param <Y>           The field value type
+	 * @return This
+	 */
+	<X, Y> J where(@NotNull String attributePath, Operand operator, Collection<Y> value);
+
+	/**
+	 * Performs a filter on the database using a dot-separated attribute path
+	 *
+	 * @param attributePath Dot-separated path to the attribute
+	 * @param operator      The operand to use
+	 * @param value         The value to apply
+	 * @param <X>           The attribute type
+	 * @param <Y>           The attribute value type
+	 * @return This object
+	 */
+	<X, Y> J where(@NotNull String attributePath, Operand operator, Y value);
+
+	/**
 	 * Where the operand is the type of collection or list
 	 *
 	 * @param attribute Select column
@@ -209,9 +245,9 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param <Y>       The field value type
 	 * @return This
 	 */
-	
+
 	<X, Y> J where(Attribute<X, Y> attribute, Operand operator, Y[] value);
-	
+
 	/**
 	 * Where the operand is the type of collection or list
 	 *
@@ -237,7 +273,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 */
 	
 	<X, Y> J where(Attribute<X, Y> attribute, Operand operator, Collection<Y> value);
-	
+
 	/**
 	 * Where the operand is the type of collection or list
 	 *
