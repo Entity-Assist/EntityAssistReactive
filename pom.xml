@@ -181,6 +181,24 @@
                     <argLine>--add-reads org.hibernate.orm.core=entity.assist.test --add-reads org.jboss.logging=org.hibernate.reactive</argLine>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.hibernate.orm</groupId>
+                <artifactId>hibernate-maven-plugin</artifactId>
+                <version>${maven.hibernate.version}</version>
+                <executions>
+                    <execution>
+                        <id>enhance</id>
+                        <goals>
+                            <goal>enhance</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                        <configuration>
+                            <enableLazyInitialization>true</enableLazyInitialization>
+                            <enableAssociationManagement>false</enableAssociationManagement>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
