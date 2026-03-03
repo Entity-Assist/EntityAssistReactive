@@ -22,8 +22,6 @@ jobs:
     with:
       baseDir: ''
       name: 'Entity Assist'
-      sonarProjectName: 'Entity-Assist_EntityAssistReactive'
-      sonarOrganization: 'entity-assist'
       skipDeploy: 'true'
     secrets: inherit
   deploy:
@@ -35,7 +33,5 @@ jobs:
     with:
       baseDir: ''
       name: 'Entity Assist'
-      sonarProjectName: 'Entity-Assist_EntityAssistReactive'
-      sonarOrganization: 'entity-assist'
       publishToCentral: ${{inputs.centralRelease}}
     secrets: inherit
