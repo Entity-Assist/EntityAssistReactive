@@ -23,7 +23,13 @@ jobs:
       baseDir: ''
       name: 'Entity Assist'
       skipDeploy: 'true'
-    secrets: inherit
+    secrets:
+      USERNAME: ${{secrets.USERNAME}}
+      USER_TOKEN: ${{secrets.USER_TOKEN}}
+      SONA_USERNAME: ${{secrets.SONA_USERNAME}}
+      SONA_PASSWORD: ${{secrets.SONA_PASSWORD}}
+      GPG_PASSPHRASE: ${{secrets.GPG_PASSPHRASE}}
+      GPG_PRIVATE_KEY: ${{secrets.GPG_PRIVATE_KEY}}
   deploy:
     if: >-
       github.event_name == 'push' ||
@@ -34,4 +40,10 @@ jobs:
       baseDir: ''
       name: 'Entity Assist'
       publishToCentral: ${{inputs.centralRelease}}
-    secrets: inherit
+    secrets:
+      USERNAME: ${{secrets.USERNAME}}
+      USER_TOKEN: ${{secrets.USER_TOKEN}}
+      SONA_USERNAME: ${{secrets.SONA_USERNAME}}
+      SONA_PASSWORD: ${{secrets.SONA_PASSWORD}}
+      GPG_PASSPHRASE: ${{secrets.GPG_PASSPHRASE}}
+      GPG_PRIVATE_KEY: ${{secrets.GPG_PRIVATE_KEY}}

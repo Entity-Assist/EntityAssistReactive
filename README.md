@@ -13,7 +13,6 @@
 
 <!-- Tech icons row -->
 ![Hibernate Reactive](https://img.shields.io/badge/Hibernate-Reactive_7-59666C?logo=hibernate)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-4169E1?logo=postgresql&logoColor=white)
 ![Mutiny](https://img.shields.io/badge/Mutiny-1.x-0A7)
 ![GuicedEE](https://img.shields.io/badge/GuicedEE-Persistence-0A7)
 
@@ -594,15 +593,10 @@ module entity.assist.test {
 - Architecture — [`docs/architecture/README.md`](docs/architecture/README.md) indexes the C4/sequence/ERD diagrams
 - Prompt Reference — [`docs/PROMPT_REFERENCE.md`](docs/PROMPT_REFERENCE.md)
 
-## CI & Secrets
-
-GitHub Actions (`.github/workflows/build.yml`) wires the shared GuicedEE workflow and expects secrets such as `SONA_USERNAME`, `SONA_PASSWORD`, `GPG_PRIVATE_KEY`, `GPG_PASSPHRASE`, `GITHUB_ACTOR`, and `GITHUB_TOKEN` in repository/environment scope.
-
 ## 🤝 Contributing
 
 Issues and pull requests are welcome.
 
-- Keep the rules submodule (`rules/`) synced before editing prompts
 - All pull requests should include documentation updates when behavior changes
 
 ## 📄 License
