@@ -14,6 +14,14 @@ public class GroupedExpression
 		implements IFilterExpression
 {
 	/**
+	 * Constructs a new grouped expression
+	 */
+	public GroupedExpression()
+	{
+		// default
+	}
+
+	/**
 	 * The final set of expressions
 	 */
 	private final Set<IFilterExpression> filterExpressions = new LinkedHashSet<>();

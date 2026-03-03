@@ -12,6 +12,14 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+/**
+ * Intermediate entity layer between {@link RootEntity} and {@link BaseEntity}.
+ * Provides an extension point for cross-cutting entity concerns.
+ *
+ * @param <J> The concrete entity type (CRTP self-reference)
+ * @param <Q> The associated query builder type
+ * @param <I> The entity ID type
+ */
 @MappedSuperclass()
 @JsonAutoDetect(fieldVisibility = ANY,
         getterVisibility = NONE,
@@ -20,4 +28,10 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 public abstract class DefaultEntity<J extends DefaultEntity<J, Q, I>, Q extends DefaultQueryBuilder<Q, J, I>, I extends Serializable>
         extends RootEntity<J, Q, I>
         implements IDefaultEntity<J, Q, I> {
+    /**
+     * Constructs a new default entity instance
+     */
+    public DefaultEntity() {
+        // extension point
+    }
 }

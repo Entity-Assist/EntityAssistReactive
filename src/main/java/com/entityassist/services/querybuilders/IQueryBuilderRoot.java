@@ -91,6 +91,7 @@ public interface IQueryBuilderRoot<J extends IQueryBuilderRoot<J, E, I>,
     /**
      * Persists this entity. Uses the get instance entity manager to operate.
      *
+     * @param entity The entity to persist
      * @return This
      */
 
@@ -145,10 +146,21 @@ public interface IQueryBuilderRoot<J extends IQueryBuilderRoot<J, E, I>,
      * Returns the given attribute for a field name by reflectively accesing the static class
      *
      * @param fieldName the field to get an attribute for
+     * @param <X>       The attribute entity type
+     * @param <Y>       The attribute field type
      * @return the attribute or null
      */
     <X, Y> Attribute<X, Y> getAttribute(String fieldName);
 
+    /**
+     * Returns the given attribute for a field name by reflectively accessing the named class
+     *
+     * @param className The fully qualified class name
+     * @param fieldName the field to get an attribute for
+     * @param <X>       The attribute entity type
+     * @param <Y>       The attribute field type
+     * @return the attribute or null
+     */
     <X, Y> Attribute<X, Y> getAttribute(@NotNull String className, @NotNull String fieldName);
 
     /**
@@ -177,6 +189,7 @@ public interface IQueryBuilderRoot<J extends IQueryBuilderRoot<J, E, I>,
      * If the builder is set to delete
      *
      * @param delete if this must run as a delete statement
+     * @return This builder instance
      */
 
     J setDelete(boolean delete);
@@ -193,6 +206,7 @@ public interface IQueryBuilderRoot<J extends IQueryBuilderRoot<J, E, I>,
      * Sets the criteria delete
      *
      * @param criteriaDelete A delete criteria delete
+     * @return This builder instance
      */
 
     J setCriteriaDelete(CriteriaDelete<E> criteriaDelete);

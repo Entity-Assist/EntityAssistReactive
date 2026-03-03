@@ -225,9 +225,9 @@ public enum ActiveFlag
 	/**
 	 * Returns the set as a list of strings
 	 *
-	 * @param flags
+	 * @param flags The set of active flags to convert
 	 *
-	 * @return
+	 * @return A set of string representations
 	 */
 	public static Set<String> activeFlagToStrings(Set<ActiveFlag> flags)
 	{

@@ -14,6 +14,10 @@ import java.util.Collection;
 
 /**
  * Public join expression
+ *
+ * @param <X> The entity type being joined
+ * @param <Y> The attribute type of the join column
+ * @param <Z> The target type of the join
  */
 @SuppressWarnings("unused")
 public final class JoinExpression<X extends BaseEntity<X, ?, ?>, Y, Z>

@@ -167,6 +167,7 @@ public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryB
    *
    * <b>Great for form checking</b>
    *
+   * @param entity The entity to validate
    * @return List of Strings
    */
   @NotNull
@@ -192,7 +193,7 @@ public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryB
   /**
    * Returns if this entity is operating as a fake or not (testing or dto)
    *
-   * @return
+   * @return true if operating as fake
    */
   @NotNull
   public boolean isFake()
@@ -204,8 +205,8 @@ public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryB
   /**
    * Sets the fake property
    *
-   * @param fake
-   * @return
+   * @param fake Whether this entity should operate in fake mode
+   * @return This entity instance
    */
   @SuppressWarnings("unchecked")
   @NotNull
@@ -228,7 +229,7 @@ public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryB
    * Sets any custom properties for this core entity.
    * Dto Read only structure. Not for storage unless mapped as such in a sub-method
    *
-   * @return
+   * @return The transient property map
    */
   @NotNull
   public Map<Serializable, Object> getProperties()
@@ -244,8 +245,8 @@ public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryB
    * Sets any custom properties for this core entity.
    * Dto Read only structure. Not for storage unless mapped as such in a sub-method
    *
-   * @param properties
-   * @return
+   * @param properties The properties map to set
+   * @return This entity instance
    */
   @NotNull
   @SuppressWarnings("unchecked")
@@ -258,7 +259,7 @@ public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryB
   /**
    * Returns this classes associated id class type
    *
-   * @return
+   * @return The class type of the entity ID
    */
   @NotNull
   @SuppressWarnings("unchecked")

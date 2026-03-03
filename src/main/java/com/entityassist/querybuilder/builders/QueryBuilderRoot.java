@@ -249,7 +249,7 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     /**
      * Persists this entity. Uses the get instance entity manager to operate.
      *
-     * @return Uni<E> containing the persisted entity
+     * @return {@code Uni<E>} containing the persisted entity
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -460,8 +460,8 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     /**
      * If a connection should be directly fetched from the datasource, or if an entity manager create native sql should be used
      *
-     * @param useDirectConnection
-     * @return
+     * @param useDirectConnection Whether to use a direct connection
+     * @return This builder instance
      */
     @SuppressWarnings("unchecked")
     public @org.jspecify.annotations.NonNull J setUseDirectConnection(boolean useDirectConnection)
@@ -473,8 +473,8 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     /**
      * Commits the direct connection after execution
      *
-     * @param commitDirectConnection
-     * @return
+     * @param commitDirectConnection Whether to commit the direct connection
+     * @return This builder instance
      */
     @SuppressWarnings("unchecked")
     public QueryBuilderRoot<J, E, I> setCommitDirectConnection(boolean commitDirectConnection)

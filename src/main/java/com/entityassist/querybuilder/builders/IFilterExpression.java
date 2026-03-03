@@ -122,6 +122,7 @@ public interface IFilterExpression
 	/**
 	 * Produces a predicate for the given filter expression
 	 *
+	 * @param builder The criteria builder to use
 	 * @return The predicate to apply
 	 */
 	Optional<Predicate> toPredicate(CriteriaBuilder builder);

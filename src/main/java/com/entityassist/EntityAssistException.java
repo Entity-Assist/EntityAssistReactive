@@ -1,5 +1,8 @@
 package com.entityassist;
 
+/**
+ * Runtime exception thrown when an entity or builder operation fails within the EntityAssist framework.
+ */
 @SuppressWarnings("unused")
 public class EntityAssistException
 		extends RuntimeException

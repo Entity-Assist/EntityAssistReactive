@@ -26,8 +26,8 @@ public interface IRootEntity<J extends IRootEntity<J, Q, I>, Q extends IQueryBui
     /**
      * Returns the id of the given type in the generic decleration
      *
-     * @param id
-     * @return
+     * @param id The id value to set
+     * @return This entity instance
      */
     @NotNull
     J setId(I id);
@@ -35,15 +35,17 @@ public interface IRootEntity<J extends IRootEntity<J, Q, I>, Q extends IQueryBui
     /**
      * Returns the builder associated with this entity
      *
+     * @param session The reactive session to use
      * @return The associated builder
      */
     @NotNull
     Q builder(Mutiny.Session session);
 
     /**
-     * A stateless session
-     * @param session
-     * @return
+     * Returns the builder associated with this entity using a stateless session
+     *
+     * @param session The reactive stateless session to use
+     * @return The associated builder
      */
     Q builder(Mutiny.StatelessSession session);
 
@@ -53,11 +55,11 @@ public interface IRootEntity<J extends IRootEntity<J, Q, I>, Q extends IQueryBui
      * Sets any custom properties for this core entity.
      * Dto Read only structure. Not for storage unless mapped as such in a sub-method
      *
-     * @return
+     * @return The transient property map
      */
     @NotNull
     Map<Serializable, Object> getProperties();
-    
+
     default String getTableName()
     {
         Class<?> c = getClass();

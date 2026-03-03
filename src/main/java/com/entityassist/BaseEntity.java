@@ -15,6 +15,14 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+/**
+ * The primary superclass for all user-defined JPA entities.
+ * Combines JSON auto-detection, CRTP builder linkage, and reactive persistence support.
+ *
+ * @param <J> The concrete entity type (CRTP self-reference)
+ * @param <Q> The associated query builder type
+ * @param <I> The entity ID type
+ */
 @MappedSuperclass()
 @JsonAutoDetect(fieldVisibility = ANY,
         getterVisibility = NONE,

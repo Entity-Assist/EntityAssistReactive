@@ -86,6 +86,8 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * Joins the given builder with an inner join and no associated builder
 	 *
 	 * @param attribute The given attribute to join on
+	 * @param <X>       The attribute entity type
+	 * @param <Y>       The attribute field type
 	 * @return This object - Configure each joins filters separately in their builders
 	 */
 	
@@ -94,8 +96,12 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	/**
 	 * Joins the given builder with the given builder and build type
 	 *
-	 * @param attribute The given attribute to join on
-	 * @param builder   A Query Builder object that contains the construct of the query
+	 * @param attribute      The given attribute to join on
+	 * @param builder        A Query Builder object that contains the construct of the query
+	 * @param joinType       The type of join to apply
+	 * @param joinExpression The join expression configuration
+	 * @param <X>            The attribute entity type
+	 * @param <Y>            The attribute field type
 	 * @return This
 	 */
 	
@@ -106,6 +112,9 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 *
 	 * @param attribute The given attribute to join on
 	 * @param builder   A Query Builder object that contains the construct of the query
+	 * @param joinType  The type of join to apply
+	 * @param <X>       The attribute entity type
+	 * @param <Y>       The attribute field type
 	 * @return This
 	 */
 	
@@ -114,8 +123,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	/**
 	 * Joins the given builder with the given builder and build type
 	 *
-	 * @param attribute The given attribute to join on
-	 * @param builder   A Query Builder object that contains the construct of the query
+	 * @param attribute      The given attribute to join on
+	 * @param builder        A Query Builder object that contains the construct of the query
+	 * @param joinType       The type of join to apply
+	 * @param onClauses      A Query Builder containing the on-clause filters
+	 * @param joinExpression The join expression configuration
+	 * @param <X>            The attribute entity type
+	 * @param <Y>            The attribute field type
 	 * @return This
 	 */
 	
@@ -126,6 +140,10 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 *
 	 * @param attribute The given attribute to join on
 	 * @param builder   A Query Builder object that contains the construct of the query
+	 * @param joinType  The type of join to apply
+	 * @param onClauses A Query Builder containing the on-clause filters
+	 * @param <X>       The attribute entity type
+	 * @param <Y>       The attribute field type
 	 * @return This
 	 */
 	
@@ -136,6 +154,8 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 *
 	 * @param attribute The given attribute to join on
 	 * @param builder   A Query Builder object that contains the construct of the query
+	 * @param <X>       The attribute entity type
+	 * @param <Y>       The attribute field type
 	 * @return This
 	 */
 	
@@ -145,7 +165,10 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * Joins the given builder With the given join type and no associated builder
 	 *
 	 * @param attribute The given attribute to join on
-	 * @return The join type to use
+	 * @param joinType  The type of join to apply
+	 * @param <X>       The attribute entity type
+	 * @param <Y>       The attribute field type
+	 * @return This
 	 */
 	
 	<X, Y> J join(Attribute<X, Y> attribute, JoinType joinType);
@@ -153,8 +176,12 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	/**
 	 * Joins the given builder With the given join type and no associated builder
 	 *
-	 * @param attribute The given attribute to join on
-	 * @return The join type to use
+	 * @param attribute      The given attribute to join on
+	 * @param joinType       The type of join to apply
+	 * @param joinExpression The join expression configuration
+	 * @param <X>            The attribute entity type
+	 * @param <Y>            The attribute field type
+	 * @return This
 	 */
 	
 	<X, Y> J join(Attribute<X, Y> attribute, JoinType joinType, JoinExpression joinExpression);
@@ -174,6 +201,8 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 *
 	 * @param fieldName The field name
 	 * @param value     The value to use - Collection, Arrays, etc
+	 * @param <X>       The attribute entity type
+	 * @param <Y>       The attribute field type
 	 * @return This
 	 */
 	
@@ -184,6 +213,8 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 *
 	 * @param fieldName The field name
 	 * @param value     The value to use - Collection, Arrays, etc
+	 * @param <X>       The attribute entity type
+	 * @param <Y>       The attribute field type
 	 * @return This
 	 */
 	
@@ -194,6 +225,8 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 *
 	 * @param fieldName The field name
 	 * @param value     The value to use - Collection, Arrays, etc
+	 * @param <X>       The attribute entity type
+	 * @param <Y>       The attribute field type
 	 * @return This
 	 */
 	
@@ -275,24 +308,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	<X, Y> J where(Attribute<X, Y> attribute, Operand operator, Collection<Y> value);
 
 	/**
-	 * Where the operand is the type of collection or list
-	 *
-	 * @param attribute The column to where on
-	 * @param operator  The operand to use
-	 * @param value     The value to apply
-	 * @param <X>       The attribute type
-	 * @param <Y>       The attribute value type
-	 * @return This
-	 */
-	
-	//<X, Y> J where(Expression<X> attribute, Operand operator, Collection<Y> value);
-	
-	/**
 	 * Performs a filter on the database with the where clauses
 	 *
 	 * @param attribute The attribute to be used
 	 * @param operator  The operand to use
 	 * @param value     The value to apply (Usually serializable)
+	 * @param <X>       The attribute entity type
+	 * @param <Y>       The attribute field type
 	 * @return This object
 	 */
 	
@@ -329,6 +351,8 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * Orders by column ascending
 	 *
 	 * @param orderBy Which attribute to order by
+	 * @param <X>     The attribute entity type
+	 * @param <Y>     The attribute field type
 	 * @return This
 	 */
 	
@@ -339,6 +363,8 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 *
 	 * @param orderBy   Order by which column
 	 * @param direction The direction to apply
+	 * @param <X>       The attribute entity type
+	 * @param <Y>       The attribute field type
 	 * @return This
 	 */
 	
@@ -356,6 +382,8 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * Selects a given column
 	 *
 	 * @param selectColumn The column to group by
+	 * @param <X>          The attribute entity type
+	 * @param <Y>          The attribute field type
 	 * @return This
 	 */
 	
@@ -368,6 +396,11 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 */
 	Set<Expression<?>> getGroupBys();
 	
+	/**
+	 * Resets to the given new root and reconstructs the query filters
+	 *
+	 * @param newRoot A FROM object to reset to
+	 */
 	void reset(From newRoot);
 	
 	/**
@@ -394,6 +427,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectColumn(Expression selectColumn);
 	
+	/**
+	 * Selects a given column with an alias
+	 *
+	 * @param selectColumn The given column from the static metadata
+	 * @param aliasName    The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectColumn(Expression selectColumn, String aliasName);
 	
@@ -406,6 +446,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectAverage(Expression attribute);
 	
+	/**
+	 * Selects the average of a column with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectAverage(Expression attribute, String alias);
 	
@@ -418,6 +465,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectCount(Expression attribute);
 	
+	/**
+	 * Selects the count of a column with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectCount(Expression attribute, String alias);
 	
@@ -430,6 +484,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectCountDistinct(Expression attribute);
 	
+	/**
+	 * Selects the count distinct of a column with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectCountDistinct(Expression attribute, String alias);
 	
@@ -442,6 +503,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectMax(Expression attribute);
 	
+	/**
+	 * Selects the max of a column with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectMax(Expression attribute, String alias);
 	
@@ -454,6 +522,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectMin(Expression attribute);
 	
+	/**
+	 * Selects the min of a column with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectMin(Expression attribute, String alias);
 	
@@ -466,6 +541,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectSum(Expression attribute);
 	
+	/**
+	 * Selects the sum of a column with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectSum(Expression attribute, String alias);
 	
@@ -478,6 +560,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectSumAsDouble(Expression attribute);
 	
+	/**
+	 * Selects the sum of a column as a double with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectSumAsDouble(Expression attribute, String alias);
 	
@@ -490,6 +579,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectSumAsLong(Expression attribute);
 	
+	/**
+	 * Selects the sum of a column as a long with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectSumAsLong(Expression attribute, String alias);
 	
@@ -502,6 +598,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectColumn(Attribute selectColumn);
 	
+	/**
+	 * Selects a given column with an alias
+	 *
+	 * @param selectColumn The given column from the static metadata
+	 * @param alias        The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectColumn(Attribute selectColumn, String alias);
 	
@@ -514,6 +617,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectAverage(Attribute attribute);
 	
+	/**
+	 * Selects the average of a column with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectAverage(Attribute attribute, String alias);
 	
@@ -526,6 +636,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectCount(Attribute attribute);
 	
+	/**
+	 * Selects the count of a column with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectCount(Attribute attribute, String alias);
 	
@@ -538,6 +655,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectCountDistinct(Attribute attribute);
 	
+	/**
+	 * Selects the count distinct of a column with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectCountDistinct(Attribute attribute, String alias);
 	
@@ -550,6 +674,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectMax(Attribute attribute);
 	
+	/**
+	 * Selects the max of a column with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectMax(Attribute attribute, String alias);
 	
@@ -562,6 +693,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectMin(Attribute attribute);
 	
+	/**
+	 * Selects the min of a column with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectMin(Attribute attribute, String alias);
 	
@@ -574,6 +712,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectSum(Attribute attribute);
 	
+	/**
+	 * Selects the sum of a column with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectSum(Attribute attribute, String alias);
 	
@@ -586,6 +731,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectSumAsDouble(Attribute attribute);
 	
+	/**
+	 * Selects the sum of a column as a double with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectSumAsDouble(Attribute attribute, String alias);
 	
@@ -598,6 +750,13 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	
 	J selectSumAsLong(Attribute attribute);
 	
+	/**
+	 * Selects the sum of a column as a long with an alias
+	 *
+	 * @param attribute A given column from static metadata
+	 * @param alias     The alias name for the selection
+	 * @return This
+	 */
 	@SuppressWarnings("unchecked")
 	J selectSumAsLong(Attribute attribute, String alias);
 
@@ -652,7 +811,8 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	/**
 	 * Enables query caching on the given query with the associated name
 	 *
-	 * @param cacheName The name for the given query
+	 * @param cacheName   The name for the given query
+	 * @param cacheRegion The cache region to use
 	 * @return Always this object
 	 */
 	
@@ -678,6 +838,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param value     The value to use
 	 * @param <X>       The attribute type
 	 * @param <Y>       The attribute field type
+	 * @param nest      If must nest a new group or not
 	 * @return This
 	 */
 	

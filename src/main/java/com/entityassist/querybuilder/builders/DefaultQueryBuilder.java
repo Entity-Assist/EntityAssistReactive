@@ -23,6 +23,13 @@ import java.util.logging.Logger;
 import static com.entityassist.querybuilder.builders.IFilterExpression.isPluralOrMapAttribute;
 import static com.entityassist.querybuilder.builders.IFilterExpression.isSingularAttribute;
 
+/**
+ * Fluent query builder DSL providing where, or, join, order-by, group-by, select, and aggregate operations.
+ *
+ * @param <J> The concrete builder type (CRTP self-reference)
+ * @param <E> The entity type
+ * @param <I> The entity ID type
+ */
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess", "unused"})
 public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>,
 		E extends DefaultEntity<E, J, I>,
@@ -1955,7 +1962,8 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	/**
 	 * Adds an OR group to the filter expressions with the previous where statement
 	 *
-	 * @param attribute The attribute to apply
+	 * @param attr      The raw attribute metadata
+	 * @param attribute The attribute expression to apply
 	 * @param operator  The operator to apply
 	 * @param value     The value to use
 	 * @param <X>       The attribute type
