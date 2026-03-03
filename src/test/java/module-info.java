@@ -3,7 +3,7 @@ import com.guicedee.client.services.lifecycle.IGuiceModule;
 module entity.assist.test {
 
     requires transitive com.entityassist;
-    requires transitive com.guicedee.vertxpersistence;
+    requires transitive com.guicedee.persistence;
 
     requires org.junit.jupiter.api;
     requires junit;

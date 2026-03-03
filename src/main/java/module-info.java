@@ -9,7 +9,7 @@ module com.entityassist {
     exports com.entityassist.exceptions;
     exports com.entityassist.querybuilder.builders;
 
-    requires transitive com.guicedee.vertxpersistence;
+    requires transitive com.guicedee.persistence;
 
     requires java.naming;
     requires java.sql;

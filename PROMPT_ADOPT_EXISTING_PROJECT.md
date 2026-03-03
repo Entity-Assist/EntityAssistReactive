@@ -75,7 +75,7 @@ Before proceeding with any other steps, register required MCP servers with your 
       - [ ] Babel (transpile configuration lives in package.json/babel.config.*)
     - Other build tooling: <OTHER_BUILDS>
   - Dependency declarations
-    - JVM: com.guicedee:guiced-vertx-persistence:2.0.0-SNAPSHOT; com.guicedee:guice-injection:2.0.0-SNAPSHOT; com.guicedee.services:hibernate-reactive:2.0.0-SNAPSHOT; io.smallrye.reactive:mutiny:3.0.0; io.vertx:vertx-pg-client:5.0.5; com.guicedee.services:scram:2.0.0-SNAPSHOT; org.projectlombok:lombok:1.18.38; jakarta.xml.bind:jakarta.xml.bind-api:4.0.4; org.glassfish.jaxb:jaxb-runtime:4.0.6.
+    - JVM: com.guicedee:guiced-vertx-persistence:2.0.0-SNAPSHOT; com.guicedee:guice-injection:2.0.0-SNAPSHOT; com.guicedee.modules.services:hibernate-reactive:2.0.0-SNAPSHOT; io.smallrye.reactive:mutiny:3.0.0; io.vertx:vertx-pg-client:5.0.5; com.guicedee.modules.services:scram:2.0.0-SNAPSHOT; org.projectlombok:lombok:1.18.38; jakarta.xml.bind:jakarta.xml.bind-api:4.0.4; org.glassfish.jaxb:jaxb-runtime:4.0.6.
     - JavaScript/Web: capture package names + versions (npm/pnpm/yarn/Babel); do not restate full build scripts here.
 
 - Detected/Chosen tech topics (tick):

@@ -81,7 +81,7 @@ Before proceeding with any other steps, register required MCP servers with your 
       - [ ] Babel (transpile configuration lives in package.json/babel.config.*)
     - Other build tooling: <OTHER_BUILDS>
   - Dependency declarations
-    - JVM: com.entityassist:entity-assist-reactive:2.0.0-SNAPSHOT (plus GuicedEE BOM-managed dependencies: com.guicedee:guiced-vertx-persistence, com.guicedee:guice-injection, com.guicedee.services:hibernate-reactive, io.vertx:vertx-pg-client, io.smallrye.reactive:mutiny, org.projectlombok:lombok, jakarta.xml.bind:jakarta.xml.bind-api, org.glassfish.jaxb:jaxb-runtime, com.guicedee.services:scram).
+    - JVM: com.entityassist:entity-assist-reactive:2.0.0-SNAPSHOT (plus GuicedEE BOM-managed dependencies: com.guicedee:guiced-vertx-persistence, com.guicedee:guice-injection, com.guicedee.modules.services:hibernate-reactive, io.vertx:vertx-pg-client, io.smallrye.reactive:mutiny, org.projectlombok:lombok, jakarta.xml.bind:jakarta.xml.bind-api, org.glassfish.jaxb:jaxb-runtime, com.guicedee.modules.services:scram).
     - JavaScript/Web: document package names + versions (npm/pnpm/yarn/Babel) and leave script wiring to language/build guides.
 
 - Component/topic areas (list): generative/data/entityassist, generative/backend/guicedee, generative/backend/vertx, generative/backend/hibernate, generative/backend/lombok, generative/backend/logging, generative/platform/ci-cd/providers/github-actions, generative/platform/secrets-config/env-variables.
@@ -201,7 +201,7 @@ Policies (must honor):
 - Logging policy: Default to Log4j2; wire logging/config/examples against Log4j2. If Lombok is selected, use Lombok's `@Log4j2` annotation (avoid other Lombok logging annotations).
 - Generated artifacts are read-only; do not propose edits to compiled outputs (e.g., TS/HTML/site bundles). For JWebMP specifically, do not generate or reference separate TS/HTML components for missing views—render dialogs/tables directly from Java components/cell renderers.
 - In JWebMP, avoid inline string HTML; express markup using JWebMP components (Div, Paragraph, Span, Table, H1–H6, etc.).
-- PostgreSQL (JPMS): Do not shade the driver. Use GuicedEE Services artifacts (com.guicedee.services:postgresql) and require org.postgresql in module-info.java.
+- PostgreSQL (JPMS): Do not shade the driver. Use GuicedEE Services artifacts (com.guicedee.modules.services:postgresql) and require org.postgresql in module-info.java.
 - For component-driven topics, provide a parent README index that links to each component .rules.md or subsection anchors.
 - Fluent API Strategy: Choose either CRTP or Builder. CRTP is enforced if GuicedEE or JWebMP is selected. Align Lombok usage accordingly:
   - If CRTP: do not use @Builder; implement manual CRTP fluent setters returning (J)this with @SuppressWarnings("unchecked") as needed.

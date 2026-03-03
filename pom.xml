@@ -62,12 +62,12 @@
     <dependencies>
              <dependency>
                  <groupId>com.guicedee</groupId>
-                 <artifactId>guiced-vertx-persistence</artifactId>
+                 <artifactId>persistence</artifactId>
              </dependency>
 
         <dependency>
             <groupId>com.guicedee</groupId>
-            <artifactId>guice-injection</artifactId>
+            <artifactId>inject</artifactId>
         </dependency>
 
         <!-- Lombok -->
@@ -80,7 +80,7 @@
 
         <!-- Hibernate Reactive -->
         <dependency>
-            <groupId>com.guicedee.services</groupId>
+            <groupId>com.guicedee.modules.services</groupId>
             <artifactId>hibernate-reactive</artifactId>
         </dependency>
 
@@ -114,7 +114,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.guicedee.services</groupId>
+            <groupId>com.guicedee.modules.services</groupId>
             <artifactId>testcontainers</artifactId>
             <scope>test</scope>
         </dependency>
