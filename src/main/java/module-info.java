@@ -18,7 +18,6 @@ module com.entityassist {
     requires jakarta.xml.bind;
     requires static lombok;
 
-    requires transitive io.vertx.sql.client.pg;
     requires transitive org.hibernate.reactive;
     requires io.smallrye.mutiny;
     requires transitive org.hibernate.orm.core;

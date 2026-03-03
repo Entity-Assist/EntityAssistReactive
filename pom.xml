@@ -20,7 +20,7 @@
         <ignore.moditect>true</ignore.moditect>
         <flatten.pom>false</flatten.pom>
 
-        <project.scm.nameUrl>/Entity-Assist/EntityAssist</project.scm.nameUrl>
+        <project.scm.nameUrl>/Entity-Assist/EntityAssistReactive</project.scm.nameUrl>
         <project.scm.packages>/Entity-Assist/Packages</project.scm.packages>
     </properties>
 
@@ -60,10 +60,10 @@
     </dependencyManagement>
 
     <dependencies>
-             <dependency>
-                 <groupId>com.guicedee</groupId>
-                 <artifactId>persistence</artifactId>
-             </dependency>
+        <dependency>
+            <groupId>com.guicedee</groupId>
+            <artifactId>persistence</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.guicedee</groupId>
@@ -74,7 +74,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.40</version>
             <scope>provided</scope>
         </dependency>
 
@@ -122,7 +121,12 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-pg-client</artifactId>
+            <scope>test</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>com.ongres.scram</groupId>
+            <artifactId>scram-client</artifactId>
         </dependency>
 
     </dependencies>
@@ -152,7 +156,8 @@
                         </path>
                     </annotationProcessorPaths>
                     <annotationProcessors>
-                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
+                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor
+                        </annotationProcessor>
                         <annotationProcessor>org.hibernate.processor.HibernateProcessor</annotationProcessor>
                     </annotationProcessors>
                     <compilerArguments>
@@ -178,7 +183,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>--add-reads org.hibernate.orm.core=entity.assist.test --add-reads org.jboss.logging=org.hibernate.reactive</argLine>
+                    <argLine>--add-reads org.hibernate.orm.core=entity.assist.test --add-reads
+                        org.jboss.logging=org.hibernate.reactive
+                    </argLine>
                 </configuration>
             </plugin>
             <plugin>

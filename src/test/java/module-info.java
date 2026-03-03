@@ -18,6 +18,7 @@ module entity.assist.test {
 
     requires org.testcontainers;
     requires io.vertx.sql.client.pg;
+    requires com.ongres.scram.client;
 
     opens com.test to org.junit.platform.commons,org.hibernate.orm.core,com.google.guice,net.bytebuddy,com.entityassist;
 
