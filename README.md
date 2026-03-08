@@ -106,8 +106,7 @@ com.entityassist
  ├── org.hibernate.orm.core          (Hibernate metamodel, CriteriaBuilder)
  ├── io.smallrye.mutiny              (Uni / Multi reactive types)
  ├── io.vertx.sql.client.pg          (Vert.x PostgreSQL reactive driver)
- ├── jakarta.xml.bind                (JAXB for XML binding)
- └── lombok                          (compile-time only)
+ └── jakarta.xml.bind                (JAXB for XML binding)
 ```
 
 ## 🧱 Defining a CRTP Entity
