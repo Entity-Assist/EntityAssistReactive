@@ -35,7 +35,7 @@ Built on [Hibernate Reactive](https://hibernate.org/reactive/) · [Vert.x SQL Cl
 <summary>Gradle (Kotlin DSL)</summary>
 
 ```kotlin
-implementation("com.entityassist:entity-assist-reactive:2.0.0-RC7")
+implementation("com.entityassist:entity-assist-reactive:2.0.0-RC8")
 ```
 </details>
 
