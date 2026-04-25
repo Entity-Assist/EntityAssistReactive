@@ -142,7 +142,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.40</version>
+                            <version>${lombok.version}</version>
                         </path>
                         <annotationProcessorPath>
                             <groupId>org.hibernate.orm</groupId>
@@ -173,6 +173,10 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
 
             <plugin>
