@@ -49,6 +49,11 @@ public enum SelectAggregrate
 		this.selectString = selectString;
 	}
 	
+	/**
+	 * Returns the SQL aggregate keyword backing this enum constant.
+	 *
+	 * @return The SQL aggregate keyword
+	 */
 	public String getSelectString()
 	{
 		return selectString;

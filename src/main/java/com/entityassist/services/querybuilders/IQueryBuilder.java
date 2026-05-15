@@ -7,6 +7,14 @@ import org.hibernate.reactive.mutiny.Mutiny;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Execution-focused SPI for query builders.
+ * Extends the fluent DSL contract with terminal operations that execute queries and mutations.
+ *
+ * @param <J> The concrete builder type (CRTP self-reference)
+ * @param <E> The entity type handled by this builder
+ * @param <I> The entity ID type
+ */
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public interface IQueryBuilder<J extends IQueryBuilder<J, E, I>,
         E extends IBaseEntity<E, J, I>,
@@ -21,6 +29,8 @@ public interface IQueryBuilder<J extends IQueryBuilder<J, E, I>,
 
     /**
      * Trigger events on the query when selects occur
+     *
+     * @param query The selection query before execution
      */
     void onSelectExecution(Mutiny.SelectionQuery<?> query);
 
@@ -76,6 +86,8 @@ public interface IQueryBuilder<J extends IQueryBuilder<J, E, I>,
      * Returns a list (distinct or not) and returns an empty optional if returns a list, or will simply return the first result found from
      * a list with the same criteria
      *
+     * @param asType The expected return type
+     * @param <T>    The expected return type
      * @return Optional of the given class type (which should be a select column)
      */
 

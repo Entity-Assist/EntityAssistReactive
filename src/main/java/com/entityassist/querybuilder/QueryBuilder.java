@@ -26,6 +26,15 @@ import java.util.List;
 import static com.entityassist.querybuilder.builders.IFilterExpression.isPluralOrMapAttribute;
 import static com.entityassist.querybuilder.builders.IFilterExpression.isSingularAttribute;
 
+/**
+ * Concrete high-level query execution builder used by user-defined builder subclasses.
+ * Extends the fluent DSL with result execution methods such as {@code get()}, {@code getAll()},
+ * {@code getCount()}, {@code delete()}, and {@code truncate()}.
+ *
+ * @param <J> The concrete builder type (CRTP self-reference)
+ * @param <E> The entity type
+ * @param <I> The entity ID type
+ */
 @Log4j2
 @SuppressWarnings({"unchecked", "unused"})
 public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends BaseEntity<E, J, I>, I extends Serializable>
@@ -40,6 +49,14 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
      * If the first result must be returned from a list
      */
     private boolean returnFirst;
+
+    /**
+     * Creates a query builder instance.
+     */
+    protected QueryBuilder()
+    {
+        // default constructor
+    }
 
     /**
      * Trigger if select should happen
@@ -375,6 +392,11 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
         return get(getEntityClass());
     }
 
+    /**
+     * Returns the runtime builder class.
+     *
+     * @return The concrete builder class
+     */
     public Class<J> getMeClass()
     {
         return (Class<J>) getClass();

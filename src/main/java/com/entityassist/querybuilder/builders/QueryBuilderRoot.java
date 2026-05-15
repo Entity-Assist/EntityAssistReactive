@@ -21,9 +21,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Builds a Query Base
+ * Root implementation for typed reactive query builders.
+ * Owns session state, criteria objects, and entity lifecycle hooks shared by higher-level DSL builders.
  *
- * @param <J> This class type
+ * @param <J> The concrete builder type (CRTP self-reference)
  * @param <E> The entity type
  * @param <I> The entity ID type
  */
@@ -35,6 +36,9 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
         I extends Serializable>
         implements IQueryBuilderRoot<J, E, I>
 {
+    /**
+     * Default log level used by query builder diagnostics.
+     */
     public static Level defaultLoggingLevel = Level.FINER;
     /**
      * The actual builder for the entity
@@ -93,6 +97,11 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     private Mutiny.StatelessSession statelessSession;
     private Mutiny.Session session;
 
+    /**
+     * Returns the criteria builder used to create and compose criteria queries.
+     *
+     * @return The shared criteria builder instance
+     */
     public CriteriaBuilder getCriteriaBuilder()
     {
         if (criteriaBuilder == null)
@@ -297,6 +306,11 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     }
 
 
+    /**
+     * Persists the entity currently attached to this builder.
+     *
+     * @return {@code Uni<E>} containing the persisted entity
+     */
     public Uni<E> persist()
     {
         return persist(getEntity());
@@ -549,6 +563,11 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
         return (J) this;
     }
 
+    /**
+     * Returns the current delete criteria, creating one lazily if required.
+     *
+     * @return The criteria delete instance
+     */
     public CriteriaDelete<E> getCriteriaDelete()
     {
         if (criteriaDelete == null)

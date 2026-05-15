@@ -6,9 +6,20 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * JPA converter mapping {@link LocalDate} to SQL {@link Timestamp}.
+ */
 @Converter()
 public class LocalDateTimestampAttributeConverter implements AttributeConverter<LocalDate, Timestamp>
 {
+	/**
+	 * Creates a converter instance.
+	 */
+	public LocalDateTimestampAttributeConverter()
+	{
+		// default constructor
+	}
+
 	@Override
 	public Timestamp convertToDatabaseColumn(LocalDate attribute)
 	{

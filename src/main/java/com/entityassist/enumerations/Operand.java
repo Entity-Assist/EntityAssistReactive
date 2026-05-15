@@ -1,5 +1,8 @@
 package com.entityassist.enumerations;
 
+/**
+ * Supported comparison operators for where and join filter expressions.
+ */
 public enum Operand
 {
 	/**

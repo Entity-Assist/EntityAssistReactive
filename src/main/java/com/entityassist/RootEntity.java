@@ -27,6 +27,14 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+/**
+ * Root CRTP entity contract used by all EntityAssist entities.
+ * Provides reactive builder access, convenience persist/update methods, and transient per-instance metadata.
+ *
+ * @param <J> The concrete entity type (CRTP self-reference)
+ * @param <Q> The concrete query builder type for this entity
+ * @param <I> The entity identifier type
+ */
 @SuppressWarnings("unused")
 @MappedSuperclass()
 @JsonAutoDetect(fieldVisibility = ANY,
@@ -40,6 +48,12 @@ public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryB
 
   private static final ThreadLocal<LocalDateTime> now = new ThreadLocal<>();
 
+  /**
+   * Returns the current logical time used by entities.
+   * If no thread-local override is set, this returns {@link LocalDateTime#now()}.
+   *
+   * @return The current effective time
+   */
   public static LocalDateTime getNow()
   {
     LocalDateTime value = now.get();
@@ -50,11 +64,19 @@ public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryB
     return value;
   }
 
+  /**
+   * Sets a thread-local logical time override used by {@link #getNow()}.
+   *
+   * @param now The logical time to use for the current thread
+   */
   public static void setNow(LocalDateTime now)
   {
     RootEntity.now.set(now);
   }
 
+  /**
+   * Increments the thread-local logical time by one second when a value is set.
+   */
   public static void tick()
   {
     if (now.get() != null)
@@ -64,6 +86,9 @@ public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryB
     }
   }
 
+  /**
+   * Increments the thread-local logical time by 100 nanoseconds when a value is set.
+   */
   public static void tickMilli()
   {
     if (now.get() != null)
@@ -113,6 +138,12 @@ public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryB
     }
   }
 
+  /**
+   * Returns a stateless query builder bound to this entity and stateless session.
+   *
+   * @param session The reactive stateless session
+   * @return A configured query builder for this entity
+   */
   @NotNull
   public Q builder(Mutiny.StatelessSession session)
   {
@@ -134,16 +165,34 @@ public abstract class RootEntity<J extends RootEntity<J, Q, I>, Q extends QueryB
     }
   }
 
+  /**
+   * Persists this entity using a stateful reactive session.
+   *
+   * @param session The reactive session
+   * @return A {@link Uni} producing the persisted entity
+   */
   public Uni<J> persist(Mutiny.Session session)
   {
     return builder(session).persist();
   }
 
+  /**
+   * Persists this entity using a stateless reactive session.
+   *
+   * @param session The reactive stateless session
+   * @return A {@link Uni} producing the persisted entity
+   */
   public Uni<J> persist(Mutiny.StatelessSession session)
   {
     return builder(session).persist();
   }
 
+  /**
+   * Updates this entity using a stateless reactive session.
+   *
+   * @param session The reactive stateless session
+   * @return A {@link Uni} producing the updated entity
+   */
   public Uni<J> update(Mutiny.StatelessSession session)
   {
     return builder(session).update();

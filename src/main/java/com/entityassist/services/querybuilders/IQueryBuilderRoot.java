@@ -12,6 +12,14 @@ import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serializable;
 
+/**
+ * Core SPI contract for the reactive query builder hierarchy.
+ * Defines entity/session binding, criteria access, lifecycle hooks, and base CRUD operations.
+ *
+ * @param <J> The concrete builder type (CRTP self-reference)
+ * @param <E> The entity type handled by this builder
+ * @param <I> The entity identifier type
+ */
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public interface IQueryBuilderRoot<J extends IQueryBuilderRoot<J, E, I>,
                                           E extends IRootEntity<E, J, I>,
@@ -86,6 +94,11 @@ public interface IQueryBuilderRoot<J extends IQueryBuilderRoot<J, E, I>,
      */
     Mutiny.StatelessSession getEntityManagerStateless();
 
+    /**
+     * Indicates whether this builder is currently bound to a stateless session.
+     *
+     * @return {@code true} when using {@link Mutiny.StatelessSession}
+     */
     boolean isStateless();
 
     /**

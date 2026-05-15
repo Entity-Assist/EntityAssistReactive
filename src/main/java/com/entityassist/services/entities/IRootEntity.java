@@ -14,6 +14,14 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Core SPI contract for all entities managed by EntityAssist.
+ * Defines ID accessors, query builder binding, and reflective metadata helpers used by query generation.
+ *
+ * @param <J> The concrete entity type (CRTP self-reference)
+ * @param <Q> The concrete query builder type
+ * @param <I> The identifier type
+ */
 public interface IRootEntity<J extends IRootEntity<J, Q, I>, Q extends IQueryBuilderRoot<Q, J, I>, I extends Serializable> {
     /**
      * Returns the id of the given type in the generic decleration
@@ -60,6 +68,11 @@ public interface IRootEntity<J extends IRootEntity<J, Q, I>, Q extends IQueryBui
     @NotNull
     Map<Serializable, Object> getProperties();
 
+    /**
+     * Resolves the effective table name from {@link Table} or {@link Entity} annotations.
+     *
+     * @return The fully qualified table name when schema/catalog are present
+     */
     default String getTableName()
     {
         Class<?> c = getClass();
@@ -102,6 +115,11 @@ public interface IRootEntity<J extends IRootEntity<J, Q, I>, Q extends IQueryBui
         return tableName;
     }
     
+    /**
+     * Returns the primary-key column name and value pair for this instance.
+     *
+     * @return A pair of {@code (columnName, value)} or an empty pair when no ID field is found
+     */
     default Pair<String, Object> getIdPair()
     {
         for (Field field : getFields())
@@ -129,6 +147,11 @@ public interface IRootEntity<J extends IRootEntity<J, Q, I>, Q extends IQueryBui
         return Pair.empty();
     }
     
+    /**
+     * Collects declared fields from the current class and all superclasses.
+     *
+     * @return A flattened list of declared fields
+     */
     default List<Field> getFields()
     {
         List<Field> fields = new ArrayList<>();
@@ -141,6 +164,12 @@ public interface IRootEntity<J extends IRootEntity<J, Q, I>, Q extends IQueryBui
         return fields;
     }
     
+    /**
+     * Determines whether a field is mappable as a simple selectable column.
+     *
+     * @param field The field to inspect
+     * @return {@code true} when the field represents a readable column-like mapping
+     */
     default boolean isColumnReadable(Field field)
     {
         JoinColumn joinCol = field.getAnnotation(JoinColumn.class);
@@ -169,6 +198,12 @@ public interface IRootEntity<J extends IRootEntity<J, Q, I>, Q extends IQueryBui
         return true;
     }
     
+    /**
+     * Resolves the database column name for a field from JPA mapping annotations.
+     *
+     * @param field The field to inspect
+     * @return The resolved column name or the field name when no explicit mapping exists
+     */
     default String getColumnName(Field field)
     {
         JoinColumn joinCol = field.getAnnotation(JoinColumn.class);

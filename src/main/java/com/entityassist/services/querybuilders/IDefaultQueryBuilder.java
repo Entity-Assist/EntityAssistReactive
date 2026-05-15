@@ -19,6 +19,14 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Fluent DSL SPI for composing criteria queries before execution.
+ * Covers filtering, joins, ordering, grouping, projections, and aggregate selection.
+ *
+ * @param <J> The concrete builder type (CRTP self-reference)
+ * @param <E> The entity type handled by this builder
+ * @param <I> The entity ID type
+ */
 @SuppressWarnings({"UnusedReturnValue", "unused", "rawtypes"})
 public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 		E extends IDefaultEntity<E, J, I>,

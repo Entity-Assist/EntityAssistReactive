@@ -5,9 +5,19 @@ import jakarta.persistence.Converter;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+/**
+ * JPA converter mapping {@link LocalDateTime} to SQL {@link Timestamp}.
+ */
 @Converter()
 public class LocalDateTimeAttributeConverter implements AttributeConverter<LocalDateTime, Timestamp>
 {
+	/**
+	 * Creates a converter instance.
+	 */
+	public LocalDateTimeAttributeConverter()
+	{
+		// default constructor
+	}
 
 	@Override
 	public Timestamp convertToDatabaseColumn(LocalDateTime locDateTime)

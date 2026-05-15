@@ -66,6 +66,14 @@ public final class JoinExpression<X extends BaseEntity<X, ?, ?>, Y, Z>
     this.attribute = attribute;
   }
 
+  /**
+   * Creates a join expression with an explicit on-clause builder.
+   *
+   * @param executor  The query builder that executes the joined branch
+   * @param joinType  The join type to apply
+   * @param attribute The attribute to join on
+   * @param onBuilder The query builder containing ON-clause predicates
+   */
   @SuppressWarnings("WeakerAccess")
   public JoinExpression(QueryBuilder<?, X, ?> executor, JoinType joinType, Attribute<X, Y> attribute, QueryBuilder<?, X, ?> onBuilder)
   {
@@ -170,7 +178,7 @@ public final class JoinExpression<X extends BaseEntity<X, ?, ?>, Y, Z>
   /**
    * The generated root if any
    *
-   * @return
+   * @return The generated join root, or {@code null} when not yet materialized
    */
   public Join<X, Y> getGeneratedRoot()
   {
@@ -180,8 +188,8 @@ public final class JoinExpression<X extends BaseEntity<X, ?, ?>, Y, Z>
   /**
    * The generated root
    *
-   * @param generatedRoot
-   * @return
+   * @param generatedRoot The generated join root to store
+   * @return This join expression
    */
   public JoinExpression<X, Y, Z> setGeneratedRoot(Join<X, Y> generatedRoot)
   {
@@ -189,6 +197,14 @@ public final class JoinExpression<X extends BaseEntity<X, ?, ?>, Y, Z>
     return this;
   }
 
+  /**
+   * Creates a predicate against the generated join root for a field and operand.
+   *
+   * @param fieldName The field on the join root
+   * @param operand   The comparison operand
+   * @param value     The value used for comparison
+   * @return A predicate representing the requested filter
+   */
   public Predicate getFilter(String fieldName, Operand operand, Object value)
   {
     Join joinRoot = getGeneratedRoot();

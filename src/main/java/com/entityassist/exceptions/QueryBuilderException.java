@@ -17,7 +17,7 @@ public class QueryBuilderException
 	/**
 	 * Occurs when a query builder exception happens
 	 *
-	 * @param message
+	 * @param message The exception message
 	 */
 	public QueryBuilderException(String message)
 	{
@@ -27,8 +27,8 @@ public class QueryBuilderException
 	/**
 	 * Occurs when a query builder exception happens
 	 *
-	 * @param message
-	 * @param cause
+	 * @param message The exception message
+	 * @param cause   The root cause
 	 */
 	public QueryBuilderException(String message, Throwable cause)
 	{
@@ -38,7 +38,7 @@ public class QueryBuilderException
 	/**
 	 * Occurs when a query builder exception happens
 	 *
-	 * @param cause
+	 * @param cause The root cause
 	 */
 	public QueryBuilderException(Throwable cause)
 	{
@@ -48,10 +48,10 @@ public class QueryBuilderException
 	/**
 	 * Occurs when a query builder exception happens
 	 *
-	 * @param message
-	 * @param cause
-	 * @param enableSuppression
-	 * @param writableStackTrace
+	 * @param message            The exception message
+	 * @param cause              The root cause
+	 * @param enableSuppression  Whether suppression is enabled
+	 * @param writableStackTrace Whether the stack trace should be writable
 	 */
 	public QueryBuilderException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace)
 	{
