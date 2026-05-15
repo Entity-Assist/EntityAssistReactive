@@ -63,6 +63,32 @@ cp .env.example .env   # update DB credentials + toggles
 mvn -B clean verify    # compilation + tests (uses Testcontainers)
 ```
 
+## 📚 Generate Javadocs
+
+```bash
+mvn -DskipTests javadoc:javadoc
+```
+
+Generated API docs are written to:
+
+`target/reports/apidocs/index.html`
+
+Build and attach the Javadoc JAR during `package`:
+
+```bash
+mvn -DskipTests package
+```
+
+Generated Javadoc artifact:
+
+`target/entity-assist-reactive-<version>-javadoc.jar`
+
+Run strict Javadoc checks (includes missing-doc validation):
+
+```bash
+mvn -DskipTests -Pstrict-javadocs javadoc:javadoc
+```
+
 ## 📐 Architecture
 
 ### Type Hierarchy
@@ -94,6 +120,21 @@ Entity.builder(session)
           └─ get() / getAll() / getCount() / delete() / persist() / update()
               └─ Returns Uni<T>
 ```
+
+### Static Builder Initializer
+
+If you prefer starting from the entity class instead of `new Entity().builder(session)`, use the static entry point:
+
+```java
+EA.from(EntityClass.class)
+  .withSession(session)
+  .withQueryBuilderOptions(qb -> qb
+      .where(EntityClass_.name, Operand.Equals, "Alice")
+      .setMaxResults(1))
+  .get();
+```
+
+You still get the concrete query-builder type (`EntityClassQueryBuilder`) with full compile-time safety.
 
 ## 🗺️ Module Graph
 

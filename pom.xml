@@ -19,6 +19,8 @@
     <properties>
         <ignore.moditect>true</ignore.moditect>
         <flatten.pom>false</flatten.pom>
+        <javadoc.doclint>all,-missing</javadoc.doclint>
+        <javadoc.failOnWarnings>false</javadoc.failOnWarnings>
 
         <project.scm.nameUrl>/Entity-Assist/EntityAssistReactive</project.scm.nameUrl>
         <project.scm.packages>/Entity-Assist/Packages</project.scm.packages>
@@ -178,6 +180,20 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <legacyMode>true</legacyMode>
+                    <doclint>${javadoc.doclint}</doclint>
+                    <failOnWarnings>${javadoc.failOnWarnings}</failOnWarnings>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -213,5 +229,15 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>strict-javadocs</id>
+            <properties>
+                <javadoc.doclint>all</javadoc.doclint>
+                <javadoc.failOnWarnings>true</javadoc.failOnWarnings>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>
