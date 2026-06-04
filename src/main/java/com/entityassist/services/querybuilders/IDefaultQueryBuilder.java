@@ -827,6 +827,23 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	J setCacheName(String cacheName, String cacheRegion);
 	
 	/**
+	 * Whether this query is configured to run read-only.
+	 *
+	 * @return true when read-only execution is enabled
+	 */
+	boolean isReadOnly();
+
+	/**
+	 * Marks this query as read-only. Read-only queries skip Hibernate dirty-state snapshots and
+	 * pre-query auto-flush, lowering CPU/GC for read-heavy paths. Opt-in and additive.
+	 *
+	 * @param readOnly true to execute read-only
+	 * @return This object
+	 */
+	J setReadOnly(boolean readOnly);
+
+
+	/**
 	 * Adds an OR group to the filter expressions with the previous where statement
 	 *
 	 * @param attribute The attribute to apply

@@ -16,6 +16,7 @@ import jakarta.persistence.metamodel.PluralAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.FlushMode;
 import org.hibernate.NonUniqueResultException;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -95,6 +96,7 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
         {
             Mutiny.SelectionQuery<Long> query = getQueryCount();
             applyCache(query);
+            applyReadOnly(query);
             onSelectExecution(query);
             return query.getSingleResult();
         }
@@ -195,6 +197,25 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
             query.setCacheRegion(getCacheRegion());
             query.setCacheRetrieveMode(CacheRetrieveMode.USE);
             query.setCacheStoreMode(CacheStoreMode.USE);
+        }
+    }
+
+    /**
+     * Applies read-only tuning to the query when {@link #isReadOnly()} is enabled.
+     * <p>
+     * Read-only queries skip Hibernate's dirty-state snapshot retention and the pre-query
+     * auto-flush ({@link FlushMode#MANUAL}), reducing CPU and GC for read-heavy paths such as
+     * GraphQL data fetchers. Opt-in and additive — does nothing unless {@code setReadOnly(true)}
+     * was called on the builder.
+     *
+     * @param query The query to apply to
+     */
+    private void applyReadOnly(Mutiny.SelectionQuery<?> query)
+    {
+        if (isReadOnly())
+        {
+            query.setReadOnly(true);
+            query.setFlushMode(FlushMode.MANUAL);
         }
     }
 
@@ -352,6 +373,7 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
         {
             Mutiny.SelectionQuery<T> query = getQuery();
             applyCache(query);
+            applyReadOnly(query);
             if (getMaxResults() != null)
             {
                 query.setMaxResults(getMaxResults());
@@ -431,6 +453,7 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
                 query.setFirstResult(getFirstResults());
             }
             applyCache(query);
+            applyReadOnly(query);
             onSelectExecution(query);
             Uni<T> j;
                 return query.getSingleResult()
@@ -503,6 +526,7 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
         {
             Mutiny.SelectionQuery<T> query = getQuery();
             applyCache(query);
+            applyReadOnly(query);
             if (getMaxResults() != null)
             {
                 query.setMaxResults(getMaxResults());

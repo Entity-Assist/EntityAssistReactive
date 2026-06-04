@@ -93,6 +93,11 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 */
 	private String cacheName;
 	/**
+	 * If this query should be executed as read-only (no dirty checking / snapshot retention).
+	 * Opt-in; defaults to false so existing behaviour is unchanged.
+	 */
+	private boolean readOnly;
+	/**
 	 * Returns the root object of this entity
 	 */
 	private From<?, ?> root;
@@ -1757,7 +1762,35 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 		this.cacheRegion = cacheRegion;
 		return (J) this;
 	}
-	
+
+	/**
+	 * Whether this query is configured to run read-only.
+	 *
+	 * @return true when read-only execution is enabled
+	 */
+	@Override
+	public boolean isReadOnly()
+	{
+		return readOnly;
+	}
+
+	/**
+	 * Marks this query as read-only. Read-only queries skip Hibernate dirty-state snapshots and
+	 * pre-query auto-flush, which lowers CPU/GC for read-heavy paths (e.g. GraphQL fetchers).
+	 * Opt-in and additive — does not change default behaviour.
+	 *
+	 * @param readOnly true to execute read-only
+	 * @return Always this object
+	 */
+	@Override
+	@NotNull
+	@SuppressWarnings("unchecked")
+	public @org.jspecify.annotations.NonNull J setReadOnly(boolean readOnly)
+	{
+		this.readOnly = readOnly;
+		return (J) this;
+	}
+
 	/**
 	 * Adds an OR group to the filter expressions with the previous where statement
 	 *
