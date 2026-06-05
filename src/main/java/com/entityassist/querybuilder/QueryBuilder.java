@@ -2,6 +2,7 @@ package com.entityassist.querybuilder;
 
 import com.entityassist.BaseEntity;
 import com.entityassist.enumerations.OrderByType;
+import com.entityassist.querybuilder.builders.CteExpression;
 import com.entityassist.querybuilder.builders.DefaultQueryBuilder;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.entityassist.services.querybuilders.IQueryBuilder;
@@ -18,11 +19,18 @@ import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.FlushMode;
 import org.hibernate.NonUniqueResultException;
+import org.hibernate.query.criteria.HibernateCriteriaBuilder;
+import org.hibernate.query.criteria.JpaCriteriaQuery;
+import org.hibernate.query.criteria.JpaCteCriteria;
+import org.hibernate.query.criteria.JpaRoot;
+import org.hibernate.query.criteria.JpaSubQuery;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import static com.entityassist.querybuilder.builders.IFilterExpression.isPluralOrMapAttribute;
 import static com.entityassist.querybuilder.builders.IFilterExpression.isSingularAttribute;
@@ -77,6 +85,284 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
     public void onSelectExecution(Mutiny.SelectionQuery<?> query)
     {
         //For inheritance
+    }
+
+    /**
+     * Registers a non-recursive Common Table Expression (CTE) and constrains this entity query to the
+     * rows produced by it, keeping the same fluent DSL.
+     * <p>
+     * The {@code definition} builder describes the CTE body (its {@code where(...)} filters). Its
+     * identifier column becomes the CTE projection, and an outer {@code id IN (SELECT id FROM cte)}
+     * predicate is added to this builder. The result is therefore a real, managed entity list - all
+     * existing operations ({@code where}, {@code orderBy}, {@code groupBy}, {@code getAll},
+     * {@code getCount}, projections) continue to work unchanged.
+     * <p>
+     * Generated SQL shape:
+     * <pre>{@code WITH cte AS (SELECT e.id FROM entity e WHERE <definition>)
+     * SELECT m.* FROM entity m WHERE m.id IN (SELECT cte.id FROM cte) AND <outer filters>}</pre>
+     *
+     * <pre>{@code
+     * var activeOnly = new EntityClass().builder(session)
+     *         .where("description", Operand.Equals, "ACTIVE");
+     *
+     * return new EntityClass().builder(session)
+     *         .with("active_entities", activeOnly)
+     *         .where("name", Operand.Like, "A%")
+     *         .getAll();
+     * }</pre>
+     *
+     * @param name       A logical name for the CTE (a unique one is generated when null/blank)
+     * @param definition The builder that produces the CTE body
+     * @return This builder, constrained by the CTE
+     */
+    @SuppressWarnings("unchecked")
+    @NotNull
+    public J with(String name, QueryBuilder<?, E, ?> definition)
+    {
+        String cteName = resolveCteName(name);
+        HibernateCriteriaBuilder cb = (HibernateCriteriaBuilder) getCriteriaBuilder();
+        Field idField = findIdField();
+        String idName = idField.getName();
+        Class<Object> idType = (Class<Object>) idField.getType();
+        String idAlias = cteName + "_id";
+
+        // CTE body: SELECT e.<id> FROM entity e WHERE <definition filters>
+        JpaCriteriaQuery<Object> definitionQuery = cb.createQuery(idType);
+        JpaRoot<E> definitionRoot = definitionQuery.from(getEntityClass());
+        definition.setCriteriaQuery(definitionQuery);
+        definition.reset(definitionRoot);
+        Path<Object> idSelection = definitionRoot.get(idName);
+        idSelection.alias(idAlias);
+        definitionQuery.select(idSelection);
+        List<Predicate> definitionFilters = new ArrayList<>(definition.getFilters());
+        definitionQuery.where(definitionFilters.toArray(new Predicate[0]));
+
+        // Register the CTE on this (entity-rooted) query and add an id IN (SELECT id FROM cte) filter
+        JpaCriteriaQuery<?> mainQuery = (JpaCriteriaQuery<?>) getCriteriaQuery();
+        JpaCteCriteria<Object> cte = mainQuery.with(cteName, definitionQuery);
+        applyCteMembership(mainQuery, cte, idName, idAlias, idType);
+
+        CteExpression<Object> expression = new CteExpression<>()
+                .setName(cteName)
+                .setDefinition(definition)
+                .setGeneratedCte(cte);
+        getCtes().add(expression);
+        return (J) this;
+    }
+
+    /**
+     * Registers a recursive Common Table Expression (CTE) and constrains this entity query to the
+     * identifiers it produces.
+     * <p>
+     * The {@code anchor} builder supplies the base member (projected to the entity identifier). The
+     * {@code recursiveProducer} receives the materialised {@link JpaCteCriteria} so the recursive
+     * member can reference the CTE itself - for example to walk a parent/child hierarchy. Members are
+     * combined with {@code UNION ALL} when {@code unionAll} is {@code true}, otherwise
+     * {@code UNION DISTINCT}. This is an advanced, lower-level entry point: the producer works directly
+     * with the Hibernate criteria API.
+     *
+     * @param name              A logical name for the CTE (a unique one is generated when null/blank)
+     * @param anchor            The builder that produces the anchor member
+     * @param recursiveProducer Produces the recursive member, given the CTE self-reference
+     * @param unionAll          {@code true} for UNION ALL, {@code false} for UNION DISTINCT
+     * @return This builder, constrained by the recursive CTE
+     */
+    @SuppressWarnings("unchecked")
+    @NotNull
+    public J withRecursive(String name,
+                           QueryBuilder<?, E, ?> anchor,
+                           Function<JpaCteCriteria<Object>, AbstractQuery<Object>> recursiveProducer,
+                           boolean unionAll)
+    {
+        String cteName = resolveCteName(name);
+        HibernateCriteriaBuilder cb = (HibernateCriteriaBuilder) getCriteriaBuilder();
+        Field idField = findIdField();
+        String idName = idField.getName();
+        Class<Object> idType = (Class<Object>) idField.getType();
+        String idAlias = cteName + "_id";
+
+        // Anchor body: SELECT e.<id> FROM entity e WHERE <anchor filters>
+        JpaCriteriaQuery<Object> anchorQuery = cb.createQuery(idType);
+        JpaRoot<E> anchorRoot = anchorQuery.from(getEntityClass());
+        anchor.setCriteriaQuery(anchorQuery);
+        anchor.reset(anchorRoot);
+        Path<Object> idSelection = anchorRoot.get(idName);
+        idSelection.alias(idAlias);
+        anchorQuery.select(idSelection);
+        List<Predicate> anchorFilters = new ArrayList<>(anchor.getFilters());
+        anchorQuery.where(anchorFilters.toArray(new Predicate[0]));
+
+        JpaCriteriaQuery<?> mainQuery = (JpaCriteriaQuery<?>) getCriteriaQuery();
+        JpaCteCriteria<Object> cte = unionAll
+                ? mainQuery.withRecursiveUnionAll(cteName, anchorQuery, recursiveProducer)
+                : mainQuery.withRecursiveUnionDistinct(cteName, anchorQuery, recursiveProducer);
+        applyCteMembership(mainQuery, cte, idName, idAlias, idType);
+
+        CteExpression<Object> expression = new CteExpression<>()
+                .setName(cteName)
+                .setRecursive(true)
+                .setUnionAll(unionAll)
+                .setDefinition(anchor)
+                .setRecursiveProducer(recursiveProducer)
+                .setGeneratedCte(cte);
+        getCtes().add(expression);
+        return (J) this;
+    }
+
+    /**
+     * Adds the {@code <id> IN (SELECT <idAlias> FROM cte)} membership predicate against this builder's
+     * root using a sub-query over the registered CTE.
+     */
+    @SuppressWarnings("unchecked")
+    private void applyCteMembership(JpaCriteriaQuery<?> mainQuery,
+                                    JpaCteCriteria<Object> cte,
+                                    String idName,
+                                    String idAlias,
+                                    Class<Object> idType)
+    {
+        JpaSubQuery<Object> sub = (JpaSubQuery<Object>) mainQuery.subquery(idType);
+        JpaRoot<Object> cteSubRoot = sub.from(cte);
+        sub.select(cteSubRoot.get(idAlias));
+        getFilters().add(getRoot().get(idName).in(sub));
+    }
+
+    /**
+     * Registers a recursive Common Table Expression that walks an adjacency-list hierarchy and
+     * constrains this query to every entity reachable from the anchor set.
+     * <p>
+     * This is the ergonomic, fully-managed recursive entry point. The {@code anchor} builder selects
+     * the starting rows (for example the roots, or a single subtree root). The CTE then repeatedly
+     * joins children to the working set using {@code childAttribute.equals(parentIdAttribute)} where
+     * {@code parentAttribute} is the self-referencing attribute on the entity that holds the parent's
+     * identifier value (a scalar FK column, dot-paths supported for associations such as
+     * {@code "parent.id"}).
+     * <p>
+     * Generated SQL shape:
+     * <pre>{@code WITH RECURSIVE tree(id) AS (
+     *     SELECT e.id FROM entity e WHERE <anchor>          -- anchor member
+     *     UNION ALL
+     *     SELECT c.id FROM entity c, tree WHERE c.parent_id = tree.id  -- recursive member
+     * )
+     * SELECT m.* FROM entity m WHERE m.id IN (SELECT tree.id FROM tree)}</pre>
+     *
+     * <pre>{@code
+     * var roots = new CategoryNode().builder(session)
+     *         .where("id", Operand.Equals, "1");
+     *
+     * return new CategoryNode().builder(session)
+     *         .withRecursiveHierarchy("subtree", roots, "parentId")
+     *         .getAll();   // node 1 and all its descendants
+     * }</pre>
+     *
+     * @param name            A logical name for the CTE (a unique one is generated when null/blank)
+     * @param anchor          The builder selecting the anchor (starting) rows
+     * @param parentAttribute The self-referencing attribute holding the parent identifier
+     * @return This builder, constrained by the recursive hierarchy CTE
+     */
+    @SuppressWarnings("unchecked")
+    @NotNull
+    public J withRecursiveHierarchy(String name, QueryBuilder<?, E, ?> anchor, String parentAttribute)
+    {
+        String cteName = resolveCteName(name);
+        HibernateCriteriaBuilder cb = (HibernateCriteriaBuilder) getCriteriaBuilder();
+        Field idField = findIdField();
+        String idName = idField.getName();
+        Class<Object> idType = (Class<Object>) idField.getType();
+        String idAlias = cteName + "_id";
+        Class<E> entityClass = getEntityClass();
+
+        // Anchor member: SELECT e.<id> FROM entity e WHERE <anchor filters>
+        JpaCriteriaQuery<Object> anchorQuery = cb.createQuery(idType);
+        JpaRoot<E> anchorRoot = anchorQuery.from(entityClass);
+        anchor.setCriteriaQuery(anchorQuery);
+        anchor.reset(anchorRoot);
+        Path<Object> anchorId = anchorRoot.get(idName);
+        anchorId.alias(idAlias);
+        anchorQuery.select(anchorId);
+        anchorQuery.where(new ArrayList<>(anchor.getFilters()).toArray(new Predicate[0]));
+
+        JpaCriteriaQuery<?> mainQuery = (JpaCriteriaQuery<?>) getCriteriaQuery();
+
+        // Recursive member: SELECT c.<id> FROM entity c, cte WHERE c.<parent> = cte.<idAlias>
+        Function<JpaCteCriteria<Object>, AbstractQuery<Object>> recursiveProducer = cteRef ->
+        {
+            JpaCriteriaQuery<Object> recursive = cb.createQuery(idType);
+            JpaRoot<E> child = recursive.from(entityClass);
+            JpaRoot<Object> parentRef = recursive.from(cteRef);
+            Path<Object> childId = child.get(idName);
+            childId.alias(idAlias);
+            recursive.select(childId);
+            recursive.where(cb.equal(traversePath(child, parentAttribute), parentRef.get(idAlias)));
+            return recursive;
+        };
+
+        JpaCteCriteria<Object> cte = mainQuery.withRecursiveUnionAll(cteName, anchorQuery, recursiveProducer);
+        applyCteMembership(mainQuery, cte, idName, idAlias, idType);
+
+        CteExpression<Object> expression = new CteExpression<>()
+                .setName(cteName)
+                .setRecursive(true)
+                .setUnionAll(true)
+                .setDefinition(anchor)
+                .setRecursiveProducer(recursiveProducer)
+                .setGeneratedCte(cte);
+        getCtes().add(expression);
+        return (J) this;
+    }
+
+    /**
+     * Traverses a dot-separated attribute path from the given root.
+     *
+     * @param root The starting from-node
+     * @param path The dot-separated attribute path
+     * @return The resolved path expression
+     */
+    private Path<Object> traversePath(From<?, ?> root, String path)
+    {
+        Path<?> current = root;
+        for (String segment : path.split("\\."))
+        {
+            current = current.get(segment);
+        }
+        //noinspection unchecked
+        return (Path<Object>) current;
+    }
+
+    /**
+     * Locates the {@link jakarta.persistence.Id} annotated field on the entity hierarchy.
+     *
+     * @return The identifier field
+     */
+    private Field findIdField()
+    {
+        Class<?> current = getEntityClass();
+        while (current != null && current != Object.class)
+        {
+            for (Field field : current.getDeclaredFields())
+            {
+                if (field.isAnnotationPresent(jakarta.persistence.Id.class))
+                {
+                    return field;
+                }
+            }
+            current = current.getSuperclass();
+        }
+        throw new com.entityassist.EntityAssistException("No @Id field found on " + getEntityClass().getName() + " - CTE support requires a single @Id field");
+    }
+
+    /**
+     * Resolves the CTE name, generating a stable unique one when none is supplied.
+     *
+     * @param name The requested name, may be {@code null} or blank
+     * @return A non-blank CTE name
+     */
+    private String resolveCteName(String name)
+    {
+        if (!Strings.isNullOrEmpty(name))
+        {
+            return name;
+        }
+        return "cte_" + Integer.toHexString(System.identityHashCode(this)) + "_" + getCtes().size();
     }
 
     /**

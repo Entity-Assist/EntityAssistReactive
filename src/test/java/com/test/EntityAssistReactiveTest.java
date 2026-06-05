@@ -5,6 +5,7 @@ import com.google.inject.name.Names;
 import com.guicedee.client.IGuiceContext;
 import com.guicedee.persistence.PersistService;
 import com.guicedee.persistence.bind.JtaPersistService;
+import com.entityassist.enumerations.Operand;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.TestInstance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Log4j2
@@ -127,5 +129,78 @@ public class EntityAssistReactiveTest
                 });
             });
         }).await().indefinitely();
+    }
+
+    @Test
+    public void testCommonTableExpression()
+    {
+        // Seed three rows: two ACTIVE, one INACTIVE
+        sessionFactory.withSession(session ->
+                session.withTransaction(tx ->
+                        new EntityClass().setId("cte1").setName("Alpha").setDescription("ACTIVE")
+                                         .builder(session).persist()
+                                         .chain(() -> new EntityClass().setId("cte2").setName("Avon").setDescription("ACTIVE")
+                                                                       .builder(session).persist())
+                                         .chain(() -> new EntityClass().setId("cte3").setName("Gamma").setDescription("ACTIVE")
+                                                                       .builder(session).persist())
+                                         .chain(() -> new EntityClass().setId("cte4").setName("Apex").setDescription("INACTIVE")
+                                                                       .builder(session).persist())
+                ).chain(() -> {
+                    // CTE body: only ACTIVE rows
+                    var activeOnly = new EntityClass().builder(session)
+                                                      .where("description", Operand.Equals, "ACTIVE");
+
+                    // Outer query reads FROM the CTE and filters names starting with "A"
+                    return new EntityClass().builder(session)
+                                            .with("active_entities", activeOnly)
+                                            .where("name", Operand.Like, "A%")
+                                            .getAll()
+                                            .invoke(results -> {
+                                                // Alpha + Avon match (ACTIVE and name A%); Gamma excluded by name; Apex excluded by description
+                                                assertNotNull(results);
+                                                assertEquals(2, results.size());
+                                                assertTrue(results.stream().allMatch(e -> e.getName().startsWith("A")));
+                                                assertTrue(results.stream().allMatch(e -> "ACTIVE".equals(e.getDescription())));
+                                            });
+                })
+        ).await().indefinitely();
+    }
+
+    @Test
+    public void testRecursiveHierarchyCommonTableExpression()
+    {
+        // Tree:  1 -> 2 -> 3, 1 -> 4   (subtree of 1 = {1,2,3,4})
+        // Separate tree: 9 -> 10       (must NOT appear)
+        sessionFactory.withSession(session ->
+                session.withTransaction(tx ->
+                        new CategoryNode().setId("1").setName("root").setParentId(null)
+                                          .builder(session).persist()
+                                          .chain(() -> new CategoryNode().setId("2").setName("child-of-1").setParentId("1")
+                                                                         .builder(session).persist())
+                                          .chain(() -> new CategoryNode().setId("3").setName("child-of-2").setParentId("2")
+                                                                         .builder(session).persist())
+                                          .chain(() -> new CategoryNode().setId("4").setName("child-of-1").setParentId("1")
+                                                                         .builder(session).persist())
+                                          .chain(() -> new CategoryNode().setId("9").setName("other-root").setParentId(null)
+                                                                         .builder(session).persist())
+                                          .chain(() -> new CategoryNode().setId("10").setName("child-of-9").setParentId("9")
+                                                                         .builder(session).persist())
+                ).chain(() -> {
+                    // Anchor: start at node "1"
+                    var anchor = new CategoryNode().builder(session)
+                                                   .where("id", Operand.Equals, "1");
+
+                    // Recursively walk children via the parentId self-reference
+                    return new CategoryNode().builder(session)
+                                             .withRecursiveHierarchy("subtree", anchor, "parentId")
+                                             .getAll()
+                                             .invoke(results -> {
+                                                 assertNotNull(results);
+                                                 var ids = results.stream().map(CategoryNode::getId).sorted().toList();
+                                                 // node 1 and all of its descendants, nothing from the 9/10 tree
+                                                 assertEquals(java.util.List.of("1", "2", "3", "4"), ids);
+                                             });
+                })
+        ).await().indefinitely();
     }
 }

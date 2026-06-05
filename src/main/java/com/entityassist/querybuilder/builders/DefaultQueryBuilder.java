@@ -77,6 +77,10 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * All of the group by's to apply
 	 */
 	private final Set<GroupByExpression> groupByExpressions;
+	/**
+	 * The set of Common Table Expressions (CTEs) registered for this query
+	 */
+	private final Set<CteExpression<?>> ctes;
 
 	/**
 	 * A cache region name to apply
@@ -117,6 +121,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 		whereExpressions = new LinkedHashSet<>();
 		orderByExpressions = new LinkedHashSet<>();
 		groupByExpressions = new LinkedHashSet<>();
+		ctes = new LinkedHashSet<>();
 	}
 	
 	/**
@@ -1676,6 +1681,17 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	public Set<JoinExpression<?, ?, ?>> getJoins()
 	{
 		return joins;
+	}
+	
+	/**
+	 * Returns the set of Common Table Expressions registered for this query.
+	 *
+	 * @return A set of CTE expressions
+	 */
+	@NotNull
+	public Set<CteExpression<?>> getCtes()
+	{
+		return ctes;
 	}
 	
 	/**

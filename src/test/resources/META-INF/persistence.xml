@@ -11,6 +11,7 @@
 
         <class>com.test.EntityClass</class>
         <class>com.test.EntityClassTwo</class>
+        <class>com.test.CategoryNode</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <!-- PostgreSQL configuration -->

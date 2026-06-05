@@ -143,6 +143,23 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
         return (J) this;
     }
 
+    /**
+     * Replaces the underlying select criteria query.
+     * <p>
+     * Used by the CTE pipeline to swap in a freshly constructed, CTE-rooted query in place of the
+     * default entity-rooted one.
+     *
+     * @param criteriaQuery The criteria query to use
+     * @return This
+     */
+    @SuppressWarnings("unchecked")
+    @NotNull
+    public @org.jspecify.annotations.NonNull J setCriteriaQuery(CriteriaQuery<?> criteriaQuery)
+    {
+        this.criteriaQuery = criteriaQuery;
+        return (J) this;
+    }
+
 
     /**
      * Constructor QueryBuilderBase creates a new QueryBuilderBase instance.
