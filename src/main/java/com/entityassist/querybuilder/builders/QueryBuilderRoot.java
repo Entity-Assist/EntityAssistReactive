@@ -278,7 +278,6 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
      * @return {@code Uni<E>} containing the persisted entity
      */
     @Override
-    @SuppressWarnings("unchecked")
     @NotNull
     public Uni<E> persist(E entity)
     {
@@ -374,7 +373,6 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
      */
     @Override
     @NotNull
-    @SuppressWarnings({"Duplicates"})
     public Uni<E> update()
     {
         try

@@ -101,7 +101,6 @@ final class WhereExpression<X, Y>
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	private Optional<Predicate> processWhereNulls(WhereExpression whereExpression)
 	{
 		switch (whereExpression.getOperand())
@@ -121,7 +120,6 @@ final class WhereExpression<X, Y>
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private Optional<Predicate> processWhereEquals(WhereExpression whereExpression)
 	{
 		Object value = whereExpression.getExpressionValue();

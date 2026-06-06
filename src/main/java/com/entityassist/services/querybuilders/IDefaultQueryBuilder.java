@@ -442,8 +442,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param aliasName    The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectColumn(Expression selectColumn, String aliasName);
+    J selectColumn(Expression selectColumn, String aliasName);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -461,8 +460,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectAverage(Expression attribute, String alias);
+    J selectAverage(Expression attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -480,8 +478,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectCount(Expression attribute, String alias);
+    J selectCount(Expression attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -499,8 +496,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectCountDistinct(Expression attribute, String alias);
+    J selectCountDistinct(Expression attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -518,8 +514,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectMax(Expression attribute, String alias);
+    J selectMax(Expression attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -537,8 +532,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectMin(Expression attribute, String alias);
+    J selectMin(Expression attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -556,8 +550,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectSum(Expression attribute, String alias);
+    J selectSum(Expression attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -575,8 +568,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectSumAsDouble(Expression attribute, String alias);
+    J selectSumAsDouble(Expression attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -594,8 +586,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectSumAsLong(Expression attribute, String alias);
+    J selectSumAsLong(Expression attribute, String alias);
 	
 	/**
 	 * Selects a given column
@@ -613,8 +604,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias        The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectColumn(Attribute selectColumn, String alias);
+    J selectColumn(Attribute selectColumn, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -632,8 +622,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectAverage(Attribute attribute, String alias);
+    J selectAverage(Attribute attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -651,8 +640,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectCount(Attribute attribute, String alias);
+    J selectCount(Attribute attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -670,8 +658,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectCountDistinct(Attribute attribute, String alias);
+    J selectCountDistinct(Attribute attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -689,8 +676,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectMax(Attribute attribute, String alias);
+    J selectMax(Attribute attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -708,8 +694,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectMin(Attribute attribute, String alias);
+    J selectMin(Attribute attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -727,8 +712,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectSum(Attribute attribute, String alias);
+    J selectSum(Attribute attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -746,8 +730,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectSumAsDouble(Attribute attribute, String alias);
+    J selectSumAsDouble(Attribute attribute, String alias);
 	
 	/**
 	 * Selects the minimum min() of a column
@@ -765,8 +748,7 @@ public interface IDefaultQueryBuilder<J extends IDefaultQueryBuilder<J, E, I>,
 	 * @param alias     The alias name for the selection
 	 * @return This
 	 */
-	@SuppressWarnings("unchecked")
-	J selectSumAsLong(Attribute attribute, String alias);
+    J selectSumAsLong(Attribute attribute, String alias);
 
 	/**
 	 * Returns the map of join executors

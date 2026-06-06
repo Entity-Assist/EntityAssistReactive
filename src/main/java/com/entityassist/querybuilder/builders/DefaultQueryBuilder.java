@@ -303,8 +303,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This object - Configure each joins filters separately in their builders
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public <X, Y> J join(Attribute<X, Y> attribute)
 	{
 		return join(attribute, null, JoinType.INNER);
@@ -425,8 +424,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public <X, Y> J join(Attribute<X, Y> attribute, QueryBuilder builder)
 	{
 		return join(attribute, builder, JoinType.INNER);
@@ -439,8 +437,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return The join type to use
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public <X, Y> J join(Attribute<X, Y> attribute, JoinType joinType)
 	{
 		return join(attribute, null, joinType);
@@ -454,8 +451,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return The join type to use
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public <X, Y> J join(Attribute<X, Y> attribute, JoinType joinType, JoinExpression joinExpression)
 	{
 		return join(attribute, null, joinType, joinExpression);
@@ -509,24 +505,21 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 
 	@Override
 	@NotNull
-	@SuppressWarnings("unchecked")
-	public <X, Y> J where(@NotNull String attributePath, Operand operator, Y[] value)
+    public <X, Y> J where(@NotNull String attributePath, Operand operator, Y[] value)
 	{
 		return wherePath(attributePath, operator, value);
 	}
 
 	@Override
 	@NotNull
-	@SuppressWarnings("unchecked")
-	public <X, Y> J where(@NotNull String attributePath, Operand operator, Collection<Y> value)
+    public <X, Y> J where(@NotNull String attributePath, Operand operator, Collection<Y> value)
 	{
 		return wherePath(attributePath, operator, value);
 	}
 
 	@Override
 	@NotNull
-	@SuppressWarnings("unchecked")
-	public <X, Y> J where(@NotNull String attributePath, Operand operator, Y value)
+    public <X, Y> J where(@NotNull String attributePath, Operand operator, Y value)
 	{
 		return wherePath(attributePath, operator, value);
 	}
@@ -726,8 +719,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public <X, Y> J orderBy(Attribute<X, Y> orderBy)
 	{
 		return orderBy(orderBy, OrderByType.ASC);
@@ -965,8 +957,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectColumn(Expression selectColumn)
 	{
 		return selectColumn(selectColumn, null);
@@ -997,8 +988,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectAverage(Expression attribute)
 	{
 		return selectAverage(attribute, null);
@@ -1066,8 +1056,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return this
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectCountDistinct(Expression attribute)
 	{
 		return selectCountDistinct(attribute, null);
@@ -1098,8 +1087,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectMax(Expression attribute)
 	{
 		return selectMax(attribute, null);
@@ -1130,8 +1118,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectMin(Expression attribute)
 	{
 		return selectMin(attribute, null);
@@ -1162,8 +1149,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectSum(Expression attribute)
 	{
 		return selectSum(attribute, null);
@@ -1194,8 +1180,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectSumAsDouble(Expression attribute)
 	{
 		return selectSumAsDouble(attribute, null);
@@ -1226,8 +1211,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectSumAsLong(Expression attribute)
 	{
 		return selectSumAsLong(attribute, null);
@@ -1289,8 +1273,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectAverage(Attribute attribute)
 	{
 		return selectAverage(attribute, null);
@@ -1321,8 +1304,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectCount(Attribute attribute)
 	{
 		return selectColumn(attribute, null);
@@ -1353,8 +1335,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return this
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectCountDistinct(Attribute attribute)
 	{
 		return selectCountDistinct(attribute, null);
@@ -1385,8 +1366,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectMax(Attribute attribute)
 	{
 		return selectMax(attribute, null);
@@ -1418,8 +1398,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectMin(Attribute attribute)
 	{
 		return selectMin(attribute, null);
@@ -1450,8 +1429,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectSum(Attribute attribute)
 	{
 		return selectSum(attribute, null);
@@ -1482,8 +1460,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectSumAsDouble(Attribute attribute)
 	{
 		return selectSumAsDouble(attribute, null);
@@ -1514,8 +1491,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public J selectSumAsLong(Attribute attribute)
 	{
 		return selectSumAsLong(attribute, null);
@@ -1580,7 +1556,6 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @param selectExpression A given column from static metadata
 	 * @return boolean
 	 */
-	@SuppressWarnings("unchecked")
 	private boolean processSelectCount(SelectExpression selectExpression)
 	{
 		Expression selectColumn = selectExpression.getAttribute();
@@ -1599,7 +1574,6 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @param selectExpression A given column from static metadata
 	 * @return true or false for this
 	 */
-	@SuppressWarnings("unchecked")
 	private boolean processSelectCountDistinct(SelectExpression selectExpression)
 	{
 		Expression selectColumn = selectExpression.getAttribute();
@@ -1835,7 +1809,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings({"Duplicates", "unchecked"})
+	@SuppressWarnings({"unchecked"})
 	@NotNull
 	public <X, Y> J or(Attribute<X, Y> attribute, Operand operator, Collection<Y> value, boolean nest)
 	{
@@ -1853,7 +1827,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	//@Override
-	@SuppressWarnings({"Duplicates", "unchecked"})
+	@SuppressWarnings({"unchecked"})
 	@NotNull
 	 <X, Y> J or(Attribute attr, Expression<X> attribute, Operand operator, Collection<Y> value, boolean nest)
 	{
@@ -1941,7 +1915,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings({"Duplicates", "unchecked"})
+	@SuppressWarnings({"unchecked"})
 	@NotNull
 	public <X, Y> J or(Attribute<X, Y> attribute, Operand operator, Y value, boolean nest)
 	{
@@ -1960,7 +1934,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	//@Override
-	@SuppressWarnings({"Duplicates", "unchecked"})
+	@SuppressWarnings({"unchecked"})
 	@NotNull
 	<X, Y> J or(Attribute attr, Expression<X> attribute, Operand operator, Y value, boolean nest)
 	{
@@ -1982,8 +1956,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	@NotNull
+    @NotNull
 	public <X, Y> J or(Attribute<X, Y> attribute, Operand operator, Y[] value)
 	{
 		return or(attribute, operator, value, false);
@@ -2001,7 +1974,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 	@Override
-	@SuppressWarnings({"Duplicates", "unchecked"})
+	@SuppressWarnings({"unchecked"})
 	@NotNull
 	public <X, Y> J or(Attribute<X, Y> attribute, Operand operator, Y[] value, boolean nest)
 	{
@@ -2021,7 +1994,7 @@ public abstract class DefaultQueryBuilder<J extends DefaultQueryBuilder<J, E, I>
 	 * @return This
 	 */
 //	@Override
-	@SuppressWarnings({"Duplicates", "unchecked"})
+	@SuppressWarnings({"unchecked"})
 	@NotNull
 	public <X, Y> J or(Attribute attr, Expression<X> attribute, Operand operator, Y[] value, boolean nest)
 	{

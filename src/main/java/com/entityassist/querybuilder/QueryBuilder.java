@@ -436,7 +436,7 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
      *
      * @return This
      */
-    @SuppressWarnings({"UnusedReturnValue", "Duplicates"})
+    @SuppressWarnings({"UnusedReturnValue"})
     @NotNull
     private J select()
     {
@@ -717,7 +717,7 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
      * @return Optional of the given class type (which should be a select column)
      */
     @Override
-    @SuppressWarnings({"Duplicates", "unused"})
+    @SuppressWarnings({"unused"})
     @NotNull
     public <T> Uni<T> get(@NotNull Class<T> asType)
     {
@@ -866,7 +866,6 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
      * @return This
      */
     @Override
-    @SuppressWarnings("Duplicates")
     public Uni<E> delete(E entity)
     {
         if (isStateless())
@@ -885,7 +884,7 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
      * @return The number of records deleted
      */
     @Override
-    @SuppressWarnings({"unused", "Duplicates"})
+    @SuppressWarnings({"unused"})
     public Uni<Integer> truncate()
     {
         CriteriaDelete<E> deletion = getCriteriaBuilder().createCriteriaDelete(getEntityClass());
