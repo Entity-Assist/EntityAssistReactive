@@ -22,5 +22,5 @@ module com.entityassist {
     requires io.smallrye.mutiny;
     requires transitive org.hibernate.orm.core;
 
-    opens com.entityassist to org.hibernate.orm.core, com.fasterxml.jackson.databind, com.google.guice, org.hibernate.validator;
+    opens com.entityassist to org.hibernate.orm.core, tools.jackson.databind, com.google.guice, org.hibernate.validator;
 }
