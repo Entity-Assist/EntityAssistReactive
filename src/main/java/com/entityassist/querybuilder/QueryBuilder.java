@@ -823,7 +823,15 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I>, E extends Ba
             }
             onSelectExecution(query);
             return query.getResultList().invoke(res -> {
-                res.forEach(e -> ((BaseEntity<?, ?, ?>) e).setFake(false));
+                res.forEach(e -> {
+                    // Only entity results carry the "fake" flag; a scalar/tuple projection
+                    // (selectColumn(...).getAll(UUID.class), etc.) returns non-entity rows that must
+                    // not be cast to BaseEntity.
+                    if (e instanceof BaseEntity<?, ?, ?> be)
+                    {
+                        be.setFake(false);
+                    }
+                });
             });
         }
         return Uni.createFrom()
