@@ -17,6 +17,7 @@ import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -287,6 +288,11 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
             {
                 if (isStateless())
                 {
+                    //A stateless session never fires JPA entity lifecycle callbacks, so any @PrePersist
+                    //assigned identifiers (or defaulted columns) would silently never be applied and
+                    //Hibernate would fail with "Identifier of entity ... must be manually assigned before calling 'insert()'"
+                    applyPrePersistCallbacks(entity);
+                    assertIdentifierAssigned(entity);
                     return getEntityManagerStateless().insert(entity)
                                .onItem()
                                .invoke(e -> {
@@ -342,6 +348,99 @@ public abstract class QueryBuilderRoot<J extends QueryBuilderRoot<J, E, I>,
     public boolean onCreate(E entity)
     {
         return true;
+    }
+
+    /**
+     * Cache of {@code @PrePersist} annotated callbacks per entity class, resolved from the entire
+     * class hierarchy (mapped superclasses included), ordered super class first as per JPA.
+     */
+    private static final java.util.Map<Class<?>, java.util.List<Method>> prePersistCallbacks = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /**
+     * Fires all {@link jakarta.persistence.PrePersist} annotated methods declared on the entity hierarchy.
+     * <p>
+     * Hibernate stateless sessions bypass the JPA entity lifecycle callbacks entirely, which means id
+     * assignment (and any other default population) implemented via {@code @PrePersist} would never run.
+     * This re-applies those callbacks so that stateless inserts behave the same as stateful persists.
+     *
+     * @param entity The entity about to be inserted
+     */
+    protected void applyPrePersistCallbacks(E entity)
+    {
+        if (entity == null)
+        {
+            return;
+        }
+        for (Method method : prePersistCallbacks.computeIfAbsent(entity.getClass(), QueryBuilderRoot::resolvePrePersistCallbacks))
+        {
+            try
+            {
+                method.invoke(entity);
+            }
+            catch (Exception e)
+            {
+                Logger.getLogger(QueryBuilderRoot.class.getName())
+                        .log(Level.FINE, "Unable to fire @PrePersist callback [" + method + "] for stateless insert", e);
+            }
+        }
+    }
+
+    /**
+     * Resolves the {@code @PrePersist} callbacks for the given class, super class first.
+     *
+     * @param type The entity class
+     * @return An immutable ordered list of callbacks, never null
+     */
+    private static java.util.List<Method> resolvePrePersistCallbacks(Class<?> type)
+    {
+        java.util.Deque<Method> found = new java.util.ArrayDeque<>();
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        Class<?> current = type;
+        while (current != null && current != Object.class)
+        {
+            for (Method method : current.getDeclaredMethods())
+            {
+                if (method.getParameterCount() != 0 || !method.isAnnotationPresent(jakarta.persistence.PrePersist.class))
+                {
+                    continue;
+                }
+                if (!seen.add(method.getName()))
+                {
+                    //overridden further down the hierarchy - already registered
+                    continue;
+                }
+                try
+                {
+                    method.setAccessible(true);
+                }
+                catch (RuntimeException accessDenied)
+                {
+                    Logger.getLogger(QueryBuilderRoot.class.getName())
+                            .log(Level.FINE, "Unable to access @PrePersist callback [" + method + "]", accessDenied);
+                }
+                found.addFirst(method);
+            }
+            current = current.getSuperclass();
+        }
+        return java.util.List.copyOf(found);
+    }
+
+    /**
+     * Guards against a stateless insert of an entity with an unassigned, non-generated identifier.
+     * Fails fast with an actionable message instead of the generic Hibernate identifier exception.
+     *
+     * @param entity The entity about to be inserted
+     */
+    protected void assertIdentifierAssigned(E entity)
+    {
+        if (entity == null || isIdGenerated() || entity.getId() != null)
+        {
+            return;
+        }
+        throw new IllegalStateException("Identifier of entity '" + entity.getClass()
+                                                                        .getCanonicalName()
+                + "' was not assigned before a stateless insert. Assign the id in the query builder onCreate(), "
+                + "a @PrePersist callback, or mark the builder as isIdGenerated() = true.");
     }
 
     /**
