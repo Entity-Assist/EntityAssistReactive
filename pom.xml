@@ -74,10 +74,6 @@
             <artifactId>persistence</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.guicedee</groupId>
-            <artifactId>inject</artifactId>
-        </dependency>
 
         <!-- Lombok -->
         <dependency>
@@ -86,16 +82,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Hibernate Reactive -->
-        <dependency>
-            <groupId>com.guicedee.modules.services</groupId>
-            <artifactId>hibernate-reactive</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.smallrye.reactive</groupId>
-            <artifactId>mutiny</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
@@ -133,11 +119,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.ongres.scram</groupId>
-            <artifactId>scram-client</artifactId>
-
-        </dependency>
 
         <dependency>
             <groupId>io.vertx</groupId>

@@ -18,9 +18,6 @@ module com.entityassist {
     requires jakarta.xml.bind;
     requires static lombok;
 
-    requires transitive org.hibernate.reactive;
-    requires io.smallrye.mutiny;
-    requires transitive org.hibernate.orm.core;
 
     opens com.entityassist to org.hibernate.orm.core, tools.jackson.databind, com.google.guice, org.hibernate.validator;
 }
