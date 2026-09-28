@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.guicedee</groupId>
         <artifactId>parent</artifactId>
-        <version>2.2.3</version>
+        <version>2.3.0</version>
     </parent>
 
     <groupId>com.entityassist</groupId>
@@ -25,6 +25,19 @@
         <project.scm.nameUrl>/Entity-Assist/EntityAssistReactive</project.scm.nameUrl>
         <project.scm.packages>/Entity-Assist/Packages</project.scm.packages>
     </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>Entity Assist GitHub Packages</name>
+            <url>https://maven.pkg.github.com/Entity-Assist/Packages</url>
+        </repository>
+        <snapshotRepository>
+            <id>github</id>
+            <name>Entity Assist GitHub Packages</name>
+            <url>https://maven.pkg.github.com/Entity-Assist/Packages</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <organization>
         <name>Entity Assist</name>
